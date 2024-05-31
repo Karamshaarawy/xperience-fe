@@ -1,18 +1,15 @@
 "use client";
 import axios from "axios";
+import { ResponseType } from "axios";
 
-const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+const baseUrl = "https://impressive-domini-royals-1be52931.koyeb.app/";
 
 export function setAuthorizationToken(token?: string) {
   if (token) {
     axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     return;
   }
-
   if (typeof window !== "undefined") {
-    axios.defaults.headers.common["Accept-Language"] = `${localStorage.getItem(
-      "i18nextLng"
-    )}`;
     const user = JSON.parse(localStorage.getItem("currentUser") as string);
     const userToken = user?.access;
     if (userToken) {
@@ -28,13 +25,12 @@ setAuthorizationToken();
 export function handelBaseUrl(path: string) {
   if (path.includes("auth")) {
     return baseUrl + path;
-  } else if (path.includes("https")) {
-    return `${path}`;
+  } else if (path.includes("dashboard")) {
+    return `${baseUrl}api/${path}`;
   } else {
     return `${baseUrl}api/v1/${path}`;
   }
 }
-
 export function GetReq(path: string) {
   setAuthorizationToken();
   const res = axios
@@ -43,7 +39,6 @@ export function GetReq(path: string) {
     .catch(handelErrors);
   return res;
 }
-
 export function GetByIdReq(path: string) {
   setAuthorizationToken();
   const res = axios
@@ -54,29 +49,20 @@ export function GetByIdReq(path: string) {
   return res;
 }
 
-// export function GetByResType(
-//   path: string,
-//   responseType: ResponseType | undefined
-// ) {
-//   setAuthorizationToken();
-//   const res = axios
-//     .create({ baseURL: baseUrl })
-//     .get(handelBaseUrl(path), { responseType: responseType })
-//     .catch(handelErrors);
-
-//   return res;
-// }
-
-export function PostReq(path: string, body: any) {
+export function GetByResType(
+  path: string,
+  responseType: ResponseType | undefined
+) {
   setAuthorizationToken();
   const res = axios
     .create({ baseURL: baseUrl })
-    .post(handelBaseUrl(path), body)
+    .get(handelBaseUrl(path), { responseType: responseType })
     .catch(handelErrors);
+
   return res;
 }
 
-export function PostReqWithoutAuth(path: string, body: any) {
+export function PostReq(path: string, body: any) {
   setAuthorizationToken();
   const res = axios
     .create({ baseURL: baseUrl })
