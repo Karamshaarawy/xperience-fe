@@ -4,7 +4,6 @@ import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function isAuth(Component: any) {
-  // eslint-disable-next-line react/display-name
   return (props: any) => {
     const router = useRouter();
     useEffect(() => {
@@ -17,6 +16,6 @@ export default function isAuth(Component: any) {
       }
     }, [router]);
 
-    return <Component {...props} />;
+    return <Component />;
   };
 }
