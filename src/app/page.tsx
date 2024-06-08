@@ -10,7 +10,7 @@ export default function Home() {
       if (isAuth !== null) {
         redirect("/dashboard");
       } else {
-        redirect("/auth/login");
+        redirect("/login");
       }
     }
   }, [pathname]);

@@ -114,7 +114,7 @@ export function handelErrors(err: any) {
     err.response?.data?.errors[0]?.code === "authentication_failed"
   ) {
     localStorage.removeItem("currentUser");
-    window.location.href = "/auth/login";
+    window.location.href = "/login";
   }
   return err.response?.data;
 }
