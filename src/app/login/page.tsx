@@ -142,10 +142,10 @@ export default function Login() {
           </div>
         </div>
         <div className="flex flex-row h-full w-full">
-          <div className="relative hidden md:flex flex-auto items-center justify-center w-1/4 h-full  lg:px-28 overflow-hidden  bg-[url('/images/untitled1.PNG')] [background-size:100%_100%]"></div>
-          <div className="relative hidden md:flex flex-auto items-center justify-center w-1/4 h-full  lg:px-28 overflow-hidden bg-[url('/images/untitled11.PNG')] [background-size:100%_100%]"></div>
-          <div className="relative hidden md:flex flex-auto items-center justify-center w-1/4 h-full  lg:px-28 overflow-hidden bg-[url('/images/untitled111.PNG')] [background-size:100%_100%]"></div>
-          <div className="relative hidden md:flex flex-auto items-center justify-center w-1/4 h-full  lg:px-28 overflow-hidden bg-[url('/images/untitled1111.PNG')] [background-size:100%_100%]"></div>
+          <div className="relative hidden md:flex flex-auto items-center justify-center w-1/4 h-full  lg:px-28 overflow-hidden  bg-[url('/images/Untitled1.PNG')] [background-size:100%_100%]"></div>
+          <div className="relative hidden md:flex flex-auto items-center justify-center w-1/4 h-full  lg:px-28 overflow-hidden bg-[url('/images/Untitled11.PNG')] [background-size:100%_100%]"></div>
+          <div className="relative hidden md:flex flex-auto items-center justify-center w-1/4 h-full  lg:px-28 overflow-hidden bg-[url('/images/Untitled111.PNG')] [background-size:100%_100%]"></div>
+          <div className="relative hidden md:flex flex-auto items-center justify-center w-1/4 h-full  lg:px-28 overflow-hidden bg-[url('/images/Untitled1111.PNG')] [background-size:100%_100%]"></div>
         </div>
       </div>
     </div>
