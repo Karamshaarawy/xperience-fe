@@ -46,13 +46,13 @@ function CarServicesPage() {
       title: "Description",
       dataIndex: "description",
       key: "description",
-      ellipsis: true,
-      width: "120px",
-      render: (description: any) => (
-        <Tooltip placement="topLeft" title={description}>
-          {description}
-        </Tooltip>
-      ),
+      // ellipsis: true,
+      // width: "120px",
+      // render: (description: any) => (
+      //   <Tooltip placement="topLeft" title={description}>
+      //     {description}
+      //   </Tooltip>
+      // ),
     },
     {
       title: "Number Of Seats",
