@@ -1,18 +1,12 @@
 "use client";
-import { redirect, usePathname } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import isAuth from "../../components/isAuth";
 
-export default function Home() {
+function Home() {
   const pathname = usePathname();
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const isAuth = localStorage.getItem("currentUser");
-      if (isAuth !== null) {
-        redirect("/dashboard");
-      } else {
-        redirect("/login");
-      }
-    }
-  }, [pathname]);
+  useEffect(() => {}, []);
   return <></>;
 }
+
+export default isAuth(Home);
