@@ -136,7 +136,7 @@ export default function DashboardLayout({
         >
           <div className="flex justify-center  py-6 w-fit m-auto">
             <Image
-              src="/static/images/Untitled1111111.PNG"
+              src="/images/Untitled1111111.PNG"
               alt="XperienceVIP"
               width={90}
               height={60}
