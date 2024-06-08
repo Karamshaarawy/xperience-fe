@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 export default function isAuth(Component: any) {
   // const [messageApi, contextHolder] = message.useMessage();
 
+  // eslint-disable-next-line react/display-name
   return (props: any) => {
     const router = useRouter();
     useEffect(() => {
