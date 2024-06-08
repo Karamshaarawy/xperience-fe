@@ -16,9 +16,8 @@ export default function Login() {
       const isAuth = localStorage.getItem("currentUser");
       let isAdmin = isAuth !== null ? JSON.parse(isAuth) : "";
       if (typeof isAdmin !== "string" && isAdmin.user.is_staff) {
-      } else {
-        // MessageAPI.error("You Are Not Allowed To Show This Page");
         router.push("/dashboard");
+      } else {
       }
     }
   }, [router]);
