@@ -19,6 +19,8 @@ import {
   InputNumber,
   Select,
   FormInstance,
+  Tooltip,
+  Badge,
 } from "antd";
 import { isMobile } from "react-device-detect";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -44,6 +46,13 @@ function CarServicesPage() {
       title: "Description",
       dataIndex: "description",
       key: "description",
+      ellipsis: true,
+      width: "120px",
+      render: (description: any) => (
+        <Tooltip placement="topLeft" title={description}>
+          {description}
+        </Tooltip>
+      ),
     },
     {
       title: "Number Of Seats",
@@ -70,7 +79,11 @@ function CarServicesPage() {
       dataIndex: "cool",
       key: "cool",
       render: (cool: boolean) =>
-        cool ? <div>Active</div> : <div>InActive</div>,
+        cool ? (
+          <Badge status="success" text="Active" />
+        ) : (
+          <Badge status="error" text="InActive" />
+        ),
     },
     {
       title: "Main Image",
@@ -88,7 +101,7 @@ function CarServicesPage() {
     },
     {
       title: "Other Images",
-      // dataIndex: "image",
+      width: "185px",
       key: "images",
       render: (record: any) => (
         <Button
@@ -100,7 +113,7 @@ function CarServicesPage() {
           id={record.id}
           onClick={() => openAddEditImages(record)}
         >
-          Add/Edit Images
+          Add / Edit Images
         </Button>
       ),
     },
@@ -116,7 +129,7 @@ function CarServicesPage() {
           }}
           className=" text-white"
           id={record.id}
-          onClick={() => openAddEditModel(record)}
+          onClick={() => openEditModel(record)}
         >
           Edit
         </Button>
@@ -320,13 +333,17 @@ function CarServicesPage() {
     getCarServicesList();
   };
 
-  function openAddEditModel(record?: any) {
+  function openAddModel() {
+    setAddEditModalOpen(true);
+  }
+  function openEditModel(record?: any) {
     setAddEditModalOpen(true);
     record.id ? setIsEdit(true) : setIsEdit(false);
     setRecordId(record?.id);
-    AddEditCarServiceForm.setFieldsValue(record);
+    record ? AddEditCarServiceForm.setFieldsValue(record) : null;
     setImageUrl(record.image);
   }
+
   function openAddEditImages(record?: any) {
     setAddEditImagesOpen(true);
     getCarImages(record.id);
@@ -354,6 +371,7 @@ function CarServicesPage() {
     AddEditCarServiceForm.resetFields();
     setCarsFileList([]);
     setAddEditImagesOpen(false);
+    setImageUrl(undefined);
   }
 
   type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
@@ -468,7 +486,7 @@ function CarServicesPage() {
     <Fragment>
       {contextHolder}
       <div className="w-full h-fit bg-[#363B5E] py-8 px-5 flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row justify-between items-center content-center">
-        <div className="flex flex-row gap-5 w-fit ">
+        <div className="flex flex-row flex-wrap gap-5 w-fit ">
           <h2 className="text-xl text-[white] font-semibold">Car Services</h2>
         </div>
         <Button
@@ -477,7 +495,7 @@ function CarServicesPage() {
             borderColor: "#F1DF78",
           }}
           className=" text-white"
-          onClick={openAddEditModel}
+          onClick={openAddModel}
         >
           Add New
         </Button>
@@ -548,7 +566,7 @@ function CarServicesPage() {
             layout="vertical"
             onFinish={addEditCarService}
           >
-            <div className="flex flex-row gap-2 justify-between">
+            <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row gap-2 justify-between">
               <Form.Item
                 label="Model"
                 name="model"
@@ -571,7 +589,7 @@ function CarServicesPage() {
                 rules={[{ required: true }]}
                 className="w-full"
               >
-                <InputNumber />
+                <InputNumber className="w-full" />
               </Form.Item>
             </div>
             <Form.Item
@@ -582,7 +600,7 @@ function CarServicesPage() {
             >
               <TextArea placeholder="Enter Description" />
             </Form.Item>
-            <div className="flex flex-row gap-2 justify-between">
+            <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row gap-2 justify-between">
               <Form.Item
                 label="Number Of Seats"
                 name="number_of_seats"
@@ -654,7 +672,12 @@ function CarServicesPage() {
                     <div>Upload</div>
                   </div>
                 ) : (
-                  <Image src={imageUrl} alt="Car Image" preview={false} />
+                  <Image
+                    src={imageUrl}
+                    alt="Car Image"
+                    preview={false}
+                    fallback="/images/no-preview.JPEG"
+                  />
                 )}
               </Upload>
             </Form.Item>
@@ -738,7 +761,7 @@ function CarServicesPage() {
   );
 }
 
-export default CarServicesPage;
+export default isAuth(CarServicesPage);
 
 const SubmitButton = ({
   form,

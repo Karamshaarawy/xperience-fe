@@ -16,6 +16,7 @@ import {
   Upload,
   UploadFile,
   message,
+  Tooltip,
 } from "antd";
 import { isMobile } from "react-device-detect";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -36,6 +37,13 @@ function HotelServicesPage() {
       title: "Description",
       dataIndex: "description",
       key: "description",
+      ellipsis: true,
+      width: "120px",
+      render: (description: any) => (
+        <Tooltip placement="topLeft" title={description}>
+          {description}
+        </Tooltip>
+      ),
     },
     {
       title: "View",
@@ -59,6 +67,7 @@ function HotelServicesPage() {
     },
     {
       title: "Images",
+      width: "185px",
       key: "images",
       render: (record: any) => (
         <Button
@@ -91,8 +100,50 @@ function HotelServicesPage() {
         </Button>
       ),
     },
+    {
+      title: "Delete",
+      key: "delete",
+      render: (record: any) => (
+        <Popconfirm
+          title="Delete Hotel Service"
+          description="Are You Sure You Want To Delete This Hotel Service?"
+          onConfirm={() => {
+            deleteHotelService(record);
+          }}
+          okText="Delete"
+          cancelText="Cancel"
+          okButtonProps={{
+            style: {
+              backgroundColor: "rgba(9, 16, 29, 1)",
+              color: "#ffffffd4",
+            },
+          }}
+        >
+          <MdDeleteForever
+            size={20}
+            color={"#DB4437"}
+            className="cursor-pointer"
+          />
+        </Popconfirm>
+      ),
+    },
   ];
 
+  function deleteHotelService(record: any) {
+    DeleteReq(`hotel-services/${record.id}/`).then((res) => {
+      // setPostEidetRequestLoading(false);
+      if (StatusSuccessCodes.includes(res.status)) {
+        messageApi.success("Car Service Deleted Successfully");
+        getHotelServicesList();
+      } else {
+        res?.errors.forEach((err: any) => {
+          messageApi.error(
+            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+          );
+        });
+      }
+    });
+  }
   function openAddEditImages(record?: any) {
     setAddEditImagesOpen(true);
     getHotelImages(record.id);
@@ -167,8 +218,8 @@ function HotelServicesPage() {
       key: "delete",
       render: (record: any) => (
         <Popconfirm
-          title="Delete Hotel Service"
-          description="Are You Sure You Want To Delete This Hotel Service?"
+          title="Delete Hotel Image"
+          description="Are You Sure You Want To Delete This Hotel Image?"
           onConfirm={() => {
             deleteHotelImage(record);
           }}
@@ -372,7 +423,7 @@ function HotelServicesPage() {
     <Fragment>
       {contextHolder}
       <div className="w-full h-fit bg-[#363B5E] py-8 px-5 flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row justify-between items-center content-center">
-        <div className="flex flex-row gap-5 w-fit ">
+        <div className="flex flex-row flex-wrap gap-5 w-fit ">
           <h2 className="text-xl text-[white] font-semibold">Hotel Services</h2>
         </div>
         <Button
@@ -452,7 +503,7 @@ function HotelServicesPage() {
             layout="vertical"
             onFinish={addEditHotelService}
           >
-            <div className="flex flex-row gap-2 justify-between">
+            <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row gap-2 justify-between">
               <Form.Item
                 label="Name"
                 name="name"
@@ -470,7 +521,7 @@ function HotelServicesPage() {
             >
               <TextArea placeholder="Enter Description" />
             </Form.Item>
-            <div className="flex flex-row gap-2 justify-between">
+            <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row gap-2 justify-between">
               <Form.Item
                 label="Number Of Rooms"
                 name="number_of_rooms"
@@ -523,7 +574,10 @@ function HotelServicesPage() {
       </div>
       <div className="w-full bg-white py-15">
         <div className="w-full h-full flex flex-col gap-5 p-5">
-          <div id="filterSearch" className="w-full h-fit flex flex-row gap-2">
+          <div
+            id="filterSearch"
+            className="w-full h-fit flex flex-row flex-wrap gap-2"
+          >
             <Form
               form={searchForm}
               onFinish={applySearch}
@@ -583,7 +637,7 @@ function HotelServicesPage() {
   );
 }
 
-export default HotelServicesPage;
+export default isAuth(HotelServicesPage);
 
 const SubmitButton = ({
   form,

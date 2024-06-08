@@ -22,7 +22,6 @@ import {
   AiOutlineMenuFold,
   AiOutlineMenuUnfold,
 } from "react-icons/ai";
-import { IoIosArrowDown } from "react-icons/io";
 import { IoCarSportOutline, IoEarthSharp } from "react-icons/io5";
 import { MdCircleNotifications, MdNotifications } from "react-icons/md";
 import { RiLogoutBoxRLine } from "react-icons/ri";
@@ -31,13 +30,11 @@ import { SiHiltonhotelsandresorts } from "react-icons/si";
 
 import { StatusSuccessCodes } from "../api/successStatus";
 import { FaRegUserCircle } from "react-icons/fa";
+import { CgOptions } from "react-icons/cg";
+import { GrServices } from "react-icons/gr";
+import { TbReservedLine } from "react-icons/tb";
 
-// import { getCurrentUserData } from "@/app/utils/currentUser";
-// import Pusher from "pusher-js";
 const { Header, Sider, Content } = Layout;
-// const pusher = new Pusher(process.env.NEXT_PUBLIC_PUSHER_KEY ?? "", {
-//   cluster: process.env.NEXT_PUBLIC_PUSHER_CLUSTER ?? "",
-// });
 export default function DashboardLayout({
   children,
 }: {
@@ -55,12 +52,11 @@ export default function DashboardLayout({
   const [numberNotification, setNumberNotification] = useState(0);
   const [apiNotification, contextHolder] = notification.useNotification();
   const isEffectCalledRef = useRef(false);
+  const [userName, setUserName] = useState<string>("");
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const isAuth = localStorage.getItem("currentUser");
-      if (isAuth !== null) {
-        // setLoginData(JSON.parse(isAuth));
-      }
+      const currentUser: any = localStorage.getItem("currentUser");
+      setUserName(currentUser?.user?.name ? currentUser?.user?.name : "Admin");
     }
 
     isMobile && isMobile ? setCollapsed(!collapsed) : setCollapsed(collapsed);
@@ -70,85 +66,11 @@ export default function DashboardLayout({
     if (current_user != null) {
       setCurrentUser(current_user);
       if (!isEffectCalledRef.current) {
-        getListNotifications();
         isEffectCalledRef.current = true;
       }
-
-      //   const channel = pusher.subscribe(`user_${current_user.id}`);
-      //   channel.bind("notification", (data: any) => {
-      //     getListNotifications();
-      //     openNotification(data);
-      //   });
-      //   return () => {
-      //     pusher.unsubscribe(`user_${current_user.id}`);
-      //   };
-      // } else {
-      //   redirect("/auth/login");
     }
   }, [router, currentUser.id]);
 
-  function getListNotifications() {
-    let numberNotif = 0;
-    GetReq("notifications/?limit=100&offset=0").then((res) => {
-      if (StatusSuccessCodes.includes(res?.status)) {
-        setNotifications(
-          res?.data?.results?.map((item: any) => {
-            setNumberNotification((numberNotif += item.seen ? 0 : 1));
-            return {
-              key: item.id,
-              onClick: () => {
-                !item.seen && markAsSeen(item.id);
-              },
-              label: (
-                <div
-                  className="flex justify-between"
-                  style={{
-                    backgroundColor: item.seen ? "white" : "#f3f6f4",
-                    height: "70px",
-                    padding: "7px",
-                    borderRadius: "5px",
-                  }}
-                >
-                  <Space>
-                    <MdNotifications size={15} />
-                    <span className="flex flex-col">
-                      <b className="w-[150px] sm:w-[250px] lg:w-[400px] xl:w-[400px] ">
-                        {" "}
-                        {item.message}
-                      </b>
-                      <small>
-                        {new Date(item.created_at).toLocaleString("CA", {
-                          hour12: true,
-                        })}
-                      </small>
-                    </span>
-                  </Space>
-                  {!item.seen && <Badge status="processing" />}
-                </div>
-              ),
-            };
-          })
-        );
-      }
-    });
-  }
-
-  // const openNotification = (description: string) => {
-  //   apiNotification.info({
-  //     message: `Notification`,
-  //     description: description,
-  //     placement: "topRight",
-  //     icon: <BsInfoCircleFill className="text-gold" />,
-  //   });
-  // };
-
-  function markAsSeen(id: string) {
-    PatchReq(`notifications/${id}/mark_as_seen/`, {}).then((res) => {
-      if (StatusSuccessCodes.includes(res?.status)) {
-        getListNotifications();
-      }
-    });
-  }
   const handleMenuClick: MenuProps["onClick"] = (e) => {
     setOpen(true);
   };
@@ -171,7 +93,7 @@ export default function DashboardLayout({
         <span>
           <Space>
             Hi
-            {/* {user.name} */}
+            {userName}
           </Space>
         </span>
       ),
@@ -197,6 +119,7 @@ export default function DashboardLayout({
       {contextHolder}
       <Layout style={{ minHeight: "100vh" }}>
         <Sider
+          width={220}
           theme="light"
           trigger={null}
           collapsible
@@ -211,12 +134,13 @@ export default function DashboardLayout({
             backgroundColor: "#292D4A",
           }}
         >
-          <div className="flex justify-center h-20 py-2 w-fit m-auto">
+          <div className="flex justify-center  py-6 w-fit m-auto">
             <Image
-              src="/images/untitled11111.PNG"
+              src="/images/Untitled1111111.PNG"
               alt="XperienceVIP"
-              width={60}
+              width={90}
               height={60}
+              className=" bg-transparent"
             />
           </div>
           <Menu
@@ -252,6 +176,23 @@ export default function DashboardLayout({
                 ),
               },
               {
+                key: `/dashboard/reservations`,
+                label: (
+                  <Link href={`/dashboard/reservations`}>
+                    <span className="text-white">
+                      <Space>
+                        <TbReservedLine
+                          size={collapsed ? 25 : 20}
+                          style={{ marginInlineEnd: "10px" }}
+                          color="white"
+                        />
+                        Reservations
+                      </Space>
+                    </span>
+                  </Link>
+                ),
+              },
+              {
                 key: `/dashboard/carServices`,
                 label: (
                   <Link href={`/dashboard/carServices`}>
@@ -280,6 +221,40 @@ export default function DashboardLayout({
                           color="white"
                         />
                         Hotel Services
+                      </Space>
+                    </span>
+                  </Link>
+                ),
+              },
+              {
+                key: `/dashboard/subscriptionOptions`,
+                label: (
+                  <Link href={`/dashboard/subscriptionOptions`}>
+                    <span className="text-white">
+                      <Space>
+                        <GrServices
+                          size={collapsed ? 25 : 20}
+                          style={{ marginInlineEnd: "10px" }}
+                          color="white"
+                        />
+                        Subscription Options
+                      </Space>
+                    </span>
+                  </Link>
+                ),
+              },
+              {
+                key: `/dashboard/serviceOptions`,
+                label: (
+                  <Link href={`/dashboard/serviceOptions`}>
+                    <span className="text-white">
+                      <Space>
+                        <CgOptions
+                          size={collapsed ? 25 : 20}
+                          style={{ marginInlineEnd: "10px" }}
+                          color="white"
+                        />
+                        Service Options
                       </Space>
                     </span>
                   </Link>
@@ -393,7 +368,7 @@ export default function DashboardLayout({
             style={{
               minHeight: 280,
             }}
-            className={collapsed ? "pl-[80px]" : "pl-[200px]"}
+            className={collapsed ? "pl-[80px]" : "pl-[220px]"}
           >
             {children}
           </Content>

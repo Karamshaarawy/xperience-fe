@@ -1,21 +1,31 @@
 "use client";
+import { message } from "antd";
 // import { getCurrentUserData } from "@/app/utils/currentUser";
 import { redirect, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function isAuth(Component: any) {
+  // const [messageApi, contextHolder] = message.useMessage();
+
   return (props: any) => {
     const router = useRouter();
     useEffect(() => {
       if (typeof window !== "undefined") {
-        const isAuth = localStorage.getItem("currentUser");
-        if (isAuth !== null) {
+        const isAuth = JSON.parse(localStorage.getItem("currentUser"))?.user
+          ?.is_staff;
+        if (isAuth) {
         } else {
-          redirect("/dashboard");
+          // MessageAPI.error("You Are Not Allowed To Show This Page");
+          redirect("/login");
         }
       }
     }, [router]);
 
-    return <Component />;
+    return (
+      <>
+        {/* {contextHolder} */}
+        <Component />;
+      </>
+    );
   };
 }

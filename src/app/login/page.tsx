@@ -13,8 +13,9 @@ export default function Login() {
   const router = useRouter();
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const isAuth = localStorage.getItem("currentUser");
-      if (isAuth !== null) {
+      const isAuth = JSON.parse(localStorage?.getItem("currentUser"))?.user
+        ?.is_staff;
+      if (isAuth) {
         router.push("/dashboard");
       }
     }
@@ -51,7 +52,7 @@ export default function Login() {
           .then(async function (response) {
             setLoading(false);
             router.push("./dashboard");
-            console.log(response.data);
+            // console.log(response.data.user.is_staff);
             // messageApi.success(response.data.detail);
             localStorage.setItem("currentUser", JSON.stringify(response?.data));
           })
