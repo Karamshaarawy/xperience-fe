@@ -15,7 +15,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { isMobile } from "react-device-detect";
 import {
   AiOutlineLogout,
@@ -370,7 +370,7 @@ export default function DashboardLayout({
             }}
             className={collapsed ? "pl-[80px]" : "pl-[220px]"}
           >
-            {children}
+            <Suspense>{children}</Suspense>
           </Content>
         </Layout>
       </Layout>
