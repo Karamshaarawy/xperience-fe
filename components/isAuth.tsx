@@ -12,9 +12,9 @@ export default function isAuth(Component: any) {
     const router = useRouter();
     useEffect(() => {
       if (typeof window !== "undefined") {
-        const isAuth = JSON.parse(localStorage.getItem("currentUser"))?.user
-          ?.is_staff;
-        if (isAuth) {
+        const isAuth = localStorage.getItem("currentUser");
+        let isAdmin = isAuth !== null ? JSON.parse(isAuth) : "";
+        if (typeof isAdmin !== "string" && isAdmin.user.is_staff) {
         } else {
           // MessageAPI.error("You Are Not Allowed To Show This Page");
           redirect("/login");
