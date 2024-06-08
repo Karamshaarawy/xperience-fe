@@ -183,7 +183,7 @@ function HotelServicesPage() {
           alt="Hotel Image"
           height={60}
           width={60}
-          fallback="/images/no-preview.JPEG"
+          fallback="/images/no-preview.jpeg"
         />
       ),
     },

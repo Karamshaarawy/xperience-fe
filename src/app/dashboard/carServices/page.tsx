@@ -95,7 +95,7 @@ function CarServicesPage() {
           alt="Car Image"
           height={30}
           width={30}
-          fallback="/images/no-preview.JPEG"
+          fallback="/images/no-preview.jpeg"
         />
       ),
     },
@@ -173,7 +173,7 @@ function CarServicesPage() {
           alt="Car Image"
           height={60}
           width={60}
-          fallback="/images/no-preview.JPEG"
+          fallback="/images/no-preview.jpeg"
         />
       ),
     },
@@ -676,7 +676,7 @@ function CarServicesPage() {
                     src={imageUrl}
                     alt="Car Image"
                     preview={false}
-                    fallback="/images/no-preview.JPEG"
+                    fallback="/images/no-preview.jpeg"
                   />
                 )}
               </Upload>
