@@ -35,7 +35,6 @@ export default function Login() {
             setLoading(false);
             messageApi.success(response.data.detail);
             setOtpDisabled(false);
-            console.log(response);
           })
           .catch(function (error) {
             setLoading(false);
@@ -52,10 +51,20 @@ export default function Login() {
           )
           .then(async function (response) {
             setLoading(false);
-            router.push("./dashboard");
-            // console.log(response.data.user.is_staff);
-            // messageApi.success(response.data.detail);
-            localStorage.setItem("currentUser", JSON.stringify(response?.data));
+
+            if (response?.data?.user?.is_staff) {
+              localStorage.setItem(
+                "currentUser",
+                JSON.stringify(response?.data)
+              );
+              router.push("./dashboard");
+            } else {
+              messageApi.error(
+                "You Are Not Admin! You Can't Login To The Dashboard"
+              );
+              form.setFieldValue("otp", null);
+              setOtpDisabled(true);
+            }
           })
           .catch(function (error) {
             setLoading(false);

@@ -307,7 +307,6 @@ function ReservationsPage() {
         >
           <Form.Provider
             onFormFinish={(name, { values, forms }) => {
-              console.log(name);
               if (name === "carReservationForm") {
                 const { basicForm } = forms;
                 const car_reservations =

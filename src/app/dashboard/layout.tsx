@@ -33,6 +33,7 @@ import { FaRegUserCircle } from "react-icons/fa";
 import { CgOptions } from "react-icons/cg";
 import { GrServices } from "react-icons/gr";
 import { TbReservedLine } from "react-icons/tb";
+import { LuUsers2 } from "react-icons/lu";
 
 const { Header, Sider, Content } = Layout;
 export default function DashboardLayout({
@@ -255,6 +256,23 @@ export default function DashboardLayout({
                           color="white"
                         />
                         Service Options
+                      </Space>
+                    </span>
+                  </Link>
+                ),
+              },
+              {
+                key: `/dashboard/users`,
+                label: (
+                  <Link href={`/dashboard/users`}>
+                    <span className="text-white">
+                      <Space>
+                        <LuUsers2
+                          size={collapsed ? 25 : 20}
+                          style={{ marginInlineEnd: "10px" }}
+                          color="white"
+                        />
+                        Users
                       </Space>
                     </span>
                   </Link>
