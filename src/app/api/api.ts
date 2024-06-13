@@ -6,18 +6,15 @@ const baseUrl = "https://impressive-domini-royals-1be52931.koyeb.app/";
 
 export function setAuthorizationToken(token?: string) {
   if (token) {
-    axios.defaults.headers.common[
-      "Authorization"
-    ] = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE5Nzc3Mjg4LCJpYXQiOjE3MTcxODUyODgsImp0aSI6ImZlODRjYzE5OGUwMDQxYzliMzhlMjIwNTE5MTkwOWVlIiwidXNlcl9pZCI6MX0.W9wVLza1_C2YMzjtskiv-2EJNe_X7cozPYYFvm59ktc`;
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     return;
   }
+
   if (typeof window !== "undefined") {
     const user = JSON.parse(localStorage.getItem("currentUser") as string);
     const userToken = user?.access;
     if (userToken) {
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE5Nzc3Mjg4LCJpYXQiOjE3MTcxODUyODgsImp0aSI6ImZlODRjYzE5OGUwMDQxYzliMzhlMjIwNTE5MTkwOWVlIiwidXNlcl9pZCI6MX0.W9wVLza1_C2YMzjtskiv-2EJNe_X7cozPYYFvm59ktc`;
+      axios.defaults.headers.common["Authorization"] = `Bearer ${userToken}`;
     } else {
       axios.defaults.headers.common["Authorization"] = null;
     }

@@ -211,6 +211,23 @@ export default function DashboardLayout({
                 ),
               },
               {
+                key: `/dashboard/carReservations`,
+                label: (
+                  <Link href={`/dashboard/carReservations`}>
+                    <span className="text-white">
+                      <Space>
+                        <IoCarSportOutline
+                          size={collapsed ? 25 : 20}
+                          style={{ marginInlineEnd: "10px" }}
+                          color="white"
+                        />
+                        Car Reservations
+                      </Space>
+                    </span>
+                  </Link>
+                ),
+              },
+              {
                 key: `/dashboard/hotelServices`,
                 label: (
                   <Link href={`/dashboard/hotelServices`}>
@@ -222,6 +239,23 @@ export default function DashboardLayout({
                           color="white"
                         />
                         Hotel Services
+                      </Space>
+                    </span>
+                  </Link>
+                ),
+              },
+              {
+                key: `/dashboard/hotelReservations`,
+                label: (
+                  <Link href={`/dashboard/hotelReservations`}>
+                    <span className="text-white">
+                      <Space>
+                        <SiHiltonhotelsandresorts
+                          size={collapsed ? 25 : 20}
+                          style={{ marginInlineEnd: "10px" }}
+                          color="white"
+                        />
+                        Hotel Reservations
                       </Space>
                     </span>
                   </Link>

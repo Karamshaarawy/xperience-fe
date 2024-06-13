@@ -12,6 +12,8 @@ import {
   Select,
   Table,
   TableColumnsType,
+  Tabs,
+  TabsProps,
   message,
 } from "antd";
 import { isMobile } from "react-device-detect";
@@ -21,9 +23,64 @@ import { StatusSuccessCodes } from "@/app/api/successStatus";
 import { RangePickerProps } from "antd/es/date-picker";
 import dayjs from "dayjs";
 import TextArea from "antd/es/input/TextArea";
+import { FiMinusCircle } from "react-icons/fi";
 
 function ReservationsPage() {
   const columns: TableColumnsType<any> = [
+    {
+      title: "Client's Name",
+      dataIndex: ["user", "name"],
+      key: "ClientName",
+    },
+    {
+      title: "Email",
+      dataIndex: ["user", "email"],
+      key: "email",
+    },
+    {
+      title: "Mobile",
+      dataIndex: ["user", "mobile"],
+      key: "mobile",
+    },
+    {
+      title: "Created By",
+      dataIndex: "created_by",
+      key: "createdBy",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+    },
+  ];
+  const carResColumns: TableColumnsType<any> = [
+    {
+      title: "Client's Name",
+      dataIndex: ["user", "name"],
+      key: "ClientName",
+    },
+    {
+      title: "Email",
+      dataIndex: ["user", "email"],
+      key: "email",
+    },
+    {
+      title: "Mobile",
+      dataIndex: ["user", "mobile"],
+      key: "mobile",
+    },
+    {
+      title: "Created By",
+      dataIndex: "created_by",
+      key: "createdBy",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+    },
+  ];
+  const hotelResColumns: TableColumnsType<any> = [
     {
       title: "Client's Name",
       dataIndex: ["user", "name"],
@@ -66,6 +123,7 @@ function ReservationsPage() {
   const [reservationsCount, setReservationsCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [addEditImagesOpen, setAddEditImagesOpen] = useState<any>(false);
+  const [carSubOptionType, setCarSubOptionType] = useState<any>(undefined);
 
   const [postEditRequestLoading, setPostEditRequestLoading] =
     useState<any>(false);
@@ -77,16 +135,32 @@ function ReservationsPage() {
   const [isEdit, setIsEdit] = useState<any>(false);
   const [recordId, setRecordId] = useState<number | undefined>(undefined);
   const [carServicesDropDown, setCarServicesDropDown] = useState<any>([]);
+  const [usersDropDown, setUsersDropDown] = useState<any>([]);
   const [subOptDropDown, setSubOptDropDown] = useState<any>([]);
+  const [carServiceOptionsDropDown, setCarServiceOptionsDropDown] =
+    useState<any>([]);
   const [hotelServicesDropDown, setHotelServicesDropDown] = useState<any>([]);
   useEffect(() => {
     getReservationsList();
     hotelServicesSearch();
     carServicesSearch();
-    // subOptServicesSearch();
+    getCarServiceOptions();
+    usersSearch();
   }, []);
   const [loadReservationsList, setLoadReservationsList] = useState<any>(false);
 
+  const items: TabsProps["items"] = [
+    {
+      key: "1",
+      label: "Cars Reservations",
+      children: <Table columns={carResColumns} />,
+    },
+    {
+      key: "2",
+      label: "Hotels Reservations",
+      children: <Table columns={hotelResColumns} />,
+    },
+  ];
   function getReservationsList(page: number = 1, pageSize: number = 10) {
     setCurrentPage(page);
     let url = `reservations/?limit=${pageSize}&offset=${(page - 1) * pageSize}`;
@@ -209,6 +283,7 @@ function ReservationsPage() {
             label: rec.name,
             value: rec.id,
             key: rec.id,
+            title: +rec.day_price,
           });
         });
         setHotelServicesDropDown(list);
@@ -248,6 +323,29 @@ function ReservationsPage() {
       }
     });
   }
+  function usersSearch(search?: any) {
+    let url = `user/profile/?limit=${9999}`;
+    search ? (url += `&search=${search}`) : null;
+    GetReq(url).then((res) => {
+      if (StatusSuccessCodes.includes(res.status)) {
+        let list: any = [];
+        res.data.results.map((rec: any) => {
+          list.push({
+            label: rec.name,
+            value: rec.id,
+            key: rec.id,
+          });
+        });
+        setUsersDropDown(list);
+      } else {
+        res?.errors.forEach((err: any) => {
+          messageApi.error(
+            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+          );
+        });
+      }
+    });
+  }
   function subOptServicesSearch(search?: any) {
     let url = `subscription-options/?limit=${9999}&car_service=${search}`;
     GetReq(url).then((res) => {
@@ -255,9 +353,11 @@ function ReservationsPage() {
         let list: any = [];
         res.data.results.map((rec: any) => {
           list.push({
-            label: `${rec.car_service.model} ${rec.duration_hours} Hr`,
+            label: rec.type + " " + rec.duration_hours + " Hr",
             value: rec.id,
             key: rec.id,
+            title: rec.price,
+            x: rec.price,
           });
         });
         setSubOptDropDown(list);
@@ -274,8 +374,35 @@ function ReservationsPage() {
   function onCarServiceSearch(value: any) {
     carServicesSearch(value);
   }
+  function onUserSearch(value: any) {
+    carServicesSearch(value);
+  }
   function onSubOptServiceSearch(value: any) {
     subOptServicesSearch(value);
+  }
+
+  function getCarServiceOptions() {
+    let url = `service-options/?limit=99999&service_type=Car`;
+    GetReq(url).then((res: any) => {
+      if (StatusSuccessCodes.includes(res.status)) {
+        let list: any = [];
+        res.data.results.map((rec: any) => {
+          list.push({
+            label: rec.type + " " + rec.name,
+            value: rec.id,
+            key: rec.id,
+            title: +rec.price,
+          });
+        });
+        setCarServiceOptionsDropDown(list);
+      } else {
+        res?.errors.forEach((err: any) => {
+          messageApi.error(
+            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+          );
+        });
+      }
+    });
   }
 
   return (
@@ -332,12 +459,8 @@ function ReservationsPage() {
               title={"Add New Car Reservation"}
               onCancel={closeAddCarReservation}
               width={700}
-              onOk={() => {
-                addCarReservationForm.submit();
-                closeAddCarReservation();
-              }}
               maskClosable={false}
-              // okButtonProps={{ style: { display: "none" } }}
+              okButtonProps={{ style: { display: "none" } }}
               cancelButtonProps={{ style: { display: "none" } }}
               afterClose={() => addCarReservationForm.resetFields()}
             >
@@ -346,26 +469,6 @@ function ReservationsPage() {
                 layout="vertical"
                 name="carReservationForm"
               >
-                {/* "": "2024-06-07T19:49:41.578Z",
-      "": "string",
-      "pickup_lat": 0,
-      "pickup_long": 0,
-      "pickup_url": "string",
-      "dropoff_address": "string",
-      "dropoff_lat": 0,
-      "dropoff_long": 0,
-      "dropoff_url": "string",
-      "terminal": "string",
-      "flight_number": "string",
-      "extras": "string",
-      "final_price": "3698063.1",
-      "subscription_option": 0,
-      "options": [
-        {
-          "service_option": 0,
-          "quantity": 2147483647
-        }
-      ] */}
                 <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row gap-2">
                   <Form.Item
                     label="Car Service"
@@ -384,6 +487,11 @@ function ReservationsPage() {
                       onClear={() => carServicesSearch()}
                       onChange={(e) => {
                         onSubOptServiceSearch(e);
+                        addCarReservationForm.setFieldValue(
+                          "subscription_option",
+                          null
+                        );
+                        setCarSubOptionType(undefined);
                       }}
                     />
                   </Form.Item>
@@ -394,8 +502,13 @@ function ReservationsPage() {
                     className="w-full"
                   >
                     <Select
-                      options={subOptDropDown}
+                      labelInValue
+                      showSearch
                       placeholder="Choose Plan"
+                      options={subOptDropDown}
+                      onChange={(e) => {
+                        setCarSubOptionType(e.label);
+                      }}
                     />
                   </Form.Item>
                 </div>
@@ -403,6 +516,7 @@ function ReservationsPage() {
                   name="pickup_time"
                   label="Pick-Up Time"
                   rules={[{ required: true }]}
+                  className="w-full"
                 >
                   <DatePicker
                     disabledDate={disabledDate}
@@ -410,26 +524,198 @@ function ReservationsPage() {
                       hideDisabledOptions: true,
                     }}
                     format="YYYY-MM-DD HH:mm"
+                    className="w-full"
                   />
                 </Form.Item>
+                <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row gap-2">
+                  <Form.Item
+                    name="pickup_address"
+                    label="Pick-Up Address"
+                    rules={[{ required: true }]}
+                    className="w-full"
+                  >
+                    <TextArea className="w-full" />
+                  </Form.Item>
+                  <Form.Item
+                    name="pickup_url"
+                    label="Pick-Up URL"
+                    // rules={[{ required: true }]}
+                    className="w-full"
+                  >
+                    <TextArea className="w-full" />
+                  </Form.Item>
+                </div>
+                <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row gap-2">
+                  <Form.Item
+                    name="pickup_lat"
+                    label="Pick-Up Lat"
+                    // rules={[{ required: true }]}
+                    className="w-full"
+                  >
+                    <InputNumber className="w-full" />
+                  </Form.Item>
+                  <Form.Item
+                    className="w-full"
+                    name="pickup_long"
+                    label="Pick-Up Long"
+                    // rules={[{ required: true }]}
+                  >
+                    <InputNumber className="w-full" />
+                  </Form.Item>
+                </div>
+                {(carSubOptionType?.includes("TRAVEL") ||
+                  carSubOptionType?.includes("RIDE")) && (
+                  <>
+                    <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row gap-2">
+                      <Form.Item
+                        name="dropoff_address"
+                        label="Drop-Off Address"
+                        rules={[{ required: true }]}
+                        className="w-full"
+                      >
+                        <TextArea className="w-full" />
+                      </Form.Item>
+                      <Form.Item
+                        name="dropoff_url"
+                        label="Drop-Off URL"
+                        // rules={[{ required: true }]}
+                        className="w-full"
+                      >
+                        <TextArea className="w-full" />
+                      </Form.Item>
+                    </div>
+                    <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row gap-2">
+                      <Form.Item
+                        name="dropoff_lat"
+                        label="Drop-Off Lat"
+                        // rules={[{ required: true }]}
+                        className="w-full"
+                      >
+                        <InputNumber className="w-full" />
+                      </Form.Item>
+                      <Form.Item
+                        name="dropoff_long"
+                        label="Drop-Off Long"
+                        // rules={[{ required: true }]}
+                        className="w-full"
+                      >
+                        <InputNumber className="w-full" />
+                      </Form.Item>
+                    </div>
+                  </>
+                )}
+                {carSubOptionType?.includes("AIRPORT") && (
+                  <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row gap-2">
+                    <Form.Item
+                      className="w-full"
+                      name="terminal"
+                      label="Terminal"
+                      rules={[{ required: true }]}
+                    >
+                      <Input className="w-full" />
+                    </Form.Item>
+                    <Form.Item
+                      className="w-full"
+                      name="flight_number"
+                      label="Flight Number"
+                      rules={[{ required: true }]}
+                    >
+                      <Input className="w-full" />
+                    </Form.Item>
+                  </div>
+                )}
+
+                <Form.List name="options">
+                  {(fields, { add, remove }) => (
+                    <>
+                      {fields.map((key, name, ...restField) => (
+                        <Form.Item key={Math.random()}>
+                          <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row gap-2 items-center">
+                            <Form.Item
+                              label="service Option"
+                              {...restField}
+                              className="w-full"
+                              name={[name, "option"]}
+                              key={Math.random()}
+                              rules={[{ required: true }]}
+                            >
+                              <Select
+                                labelInValue
+                                options={carServiceOptionsDropDown}
+                                onChange={(e) => {}}
+                                placeholder={"Select Option"}
+                                className="w-full"
+                              />
+                            </Form.Item>
+                            <Form.Item
+                              className="w-full"
+                              label="Quantity"
+                              {...restField}
+                              rules={[{ required: true }]}
+                              name={[name, "quantity"]}
+                              key={Math.random()}
+                            >
+                              <InputNumber
+                                placeholder={"enter Quantity"}
+                                className="w-full"
+                              />
+                            </Form.Item>
+                            <FiMinusCircle
+                              size={30}
+                              className="dynamic-delete-button cursor-pointer"
+                              onClick={() => remove(name)}
+                            />
+                          </div>
+                        </Form.Item>
+                      ))}
+                      <Form.Item>
+                        <Button type="dashed" onClick={() => add()} block>
+                          Add Option
+                        </Button>
+                      </Form.Item>
+                    </>
+                  )}
+                </Form.List>
                 <Form.Item
-                  name="pickup_address"
-                  label="Pick-Up Address"
-                  rules={[{ required: true }]}
+                  name="extras"
+                  label="Extras"
+                  // rules={[{ required: true }]}
+                  className="w-full"
                 >
-                  <TextArea />
+                  <TextArea className="w-full" />
                 </Form.Item>
                 <Form.Item
-                  name="dropoff_address"
-                  label="Drop-Off Address"
-                  rules={[{ required: true }]}
+                  className="w-full"
+                  name="additional_fees"
+                  label="Additional Fees"
                 >
-                  <TextArea />
+                  <InputNumber className="w-full" />
                 </Form.Item>
-                {/* <SubmitButton
-            form={addCarReservationForm}
-            loading={postEditRequestLoading}
-          /> */}
+                <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row gap-2 items-center">
+                  <Form.Item label="  ">
+                    <Button
+                      onClick={() => {
+                        console.log(addCarReservationForm.getFieldsValue());
+                        addCarReservationForm.setFieldValue("final_price", 5);
+                        addCarReservationForm.validateFields();
+                      }}
+                    >
+                      Calculate Final Price
+                    </Button>
+                  </Form.Item>
+                  <Form.Item
+                    className="w-full"
+                    name="final_price"
+                    label="Final Price"
+                    rules={[{ required: true }]}
+                  >
+                    <InputNumber className="w-full" />
+                  </Form.Item>
+                </div>
+                <SubmitButton
+                  form={addCarReservationForm}
+                  loading={postEditRequestLoading}
+                />
               </Form>
             </Modal>
             <Modal
@@ -437,12 +723,8 @@ function ReservationsPage() {
               title={"Add New Hotel Reservation"}
               onCancel={closeAddHotelReservation}
               width={700}
-              onOk={() => {
-                addHotelReservationForm.submit();
-                closeAddCarReservation();
-              }}
               maskClosable={false}
-              // okButtonProps={{ style: { display: "none" } }}
+              okButtonProps={{ style: { display: "none" } }}
               cancelButtonProps={{ style: { display: "none" } }}
               afterClose={() => addHotelReservationForm.resetFields()}
             >
@@ -457,6 +739,7 @@ function ReservationsPage() {
                   rules={[{ required: true }]}
                 >
                   <Select
+                    labelInValue
                     showSearch
                     placeholder="Select Car Service"
                     onSearch={onHotelServiceSearch}
@@ -465,6 +748,7 @@ function ReservationsPage() {
                     options={hotelServicesDropDown}
                     allowClear={true}
                     onClear={() => hotelServicesSearch()}
+                    onChange={(e) => console.log(e)}
                   />
                 </Form.Item>
                 <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row gap-2 ">
@@ -492,21 +776,89 @@ function ReservationsPage() {
                   </Form.Item>
                 </div>
 
-                {/* <SubmitButton
-            form={addCarReservationForm}
-            loading={postEditRequestLoading}
-          /> */}
+                <Form.List name="options">
+                  {(fields, { add, remove }) => (
+                    <>
+                      {fields.map((key, name, ...restField) => (
+                        <Form.Item key={Math.random()}>
+                          <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row gap-2 items-center">
+                            <Form.Item
+                              rules={[{ required: true }]}
+                              label="service Option"
+                              {...restField}
+                              className="w-full"
+                              name={[name, "option"]}
+                            >
+                              <Select
+                                placeholder={"Select Option"}
+                                className="w-full"
+                              />
+                            </Form.Item>
+                            <Form.Item
+                              rules={[{ required: true }]}
+                              className="w-full"
+                              label="Quantity"
+                              {...restField}
+                              name={[name, "quantity"]}
+                            >
+                              <InputNumber
+                                placeholder={"enter Quantity"}
+                                className="w-full"
+                              />
+                            </Form.Item>
+                            <FiMinusCircle
+                              size={30}
+                              className="dynamic-delete-button cursor-pointer"
+                              onClick={() => remove(name)}
+                            />
+                          </div>
+                        </Form.Item>
+                      ))}
+                      <Form.Item>
+                        <Button type="dashed" onClick={() => add()} block>
+                          Add Option
+                        </Button>
+                      </Form.Item>
+                    </>
+                  )}
+                </Form.List>
+                <Form.Item
+                  name="extras"
+                  label="Extras"
+                  // rules={[{ required: true }]}
+                  className="w-full"
+                >
+                  <TextArea className="w-full" />
+                </Form.Item>
+                <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row gap-2 items-center">
+                  <Form.Item label="  ">
+                    <Button
+                      onClick={() => {
+                        console.log(addCarReservationForm.getFieldsValue());
+                        addHotelReservationForm.setFieldValue("final_price", 5);
+                        addHotelReservationForm.validateFields();
+                      }}
+                    >
+                      Calculate Final Price
+                    </Button>
+                  </Form.Item>
+                  <Form.Item
+                    className="w-full"
+                    name="final_price"
+                    label="Final Price"
+                    rules={[{ required: true }]}
+                  >
+                    <InputNumber className="w-full" />
+                  </Form.Item>
+                </div>
+
+                <SubmitButton
+                  form={addHotelReservationForm}
+                  loading={postEditRequestLoading}
+                />
               </Form>
             </Modal>
-            {/* <ModalForm
-              open={addCarReservationModalOpen}
-              onCancel={closeAddCarReservation}
-            /> */}
 
-            {/* <ModalFormHotel
-              open={addHotelReservationModalOpen}
-              onCancel={closeAddHotelReservation}
-            /> */}
             <Form
               form={AddEditReservationForm}
               layout="vertical"
@@ -518,8 +870,16 @@ function ReservationsPage() {
                 label="Client"
                 rules={[{ required: true }]}
               >
-                <Input></Input>
-                {/* <Select></Select> */}
+                <Select
+                  showSearch
+                  placeholder="Select User"
+                  onSearch={onUserSearch}
+                  filterOption={false}
+                  optionFilterProp="children"
+                  options={usersDropDown}
+                  allowClear={true}
+                  onClear={() => usersSearch()}
+                />
               </Form.Item>
               <Form.Item name="car_reservations" noStyle />
               <Form.Item name="hotel_reservations" noStyle />
@@ -603,6 +963,11 @@ function ReservationsPage() {
             rowKey={"id"}
             scroll={{ x: 0 }}
             loading={loadReservationsList}
+            expandable={{
+              expandedRowRender: (record) => (
+                <Tabs defaultActiveKey="1" items={items} />
+              ),
+            }}
             pagination={{
               current: currentPage,
               total: reservationsCount,
@@ -621,7 +986,8 @@ function ReservationsPage() {
   );
 }
 
-export default isAuth(ReservationsPage);
+// export default isAuth(ReservationsPage);
+export default ReservationsPage;
 
 const SubmitButton = ({
   form,

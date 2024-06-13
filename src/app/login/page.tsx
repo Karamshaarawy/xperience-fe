@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 export default function Login() {
   const [loading, setLoading] = useState(false);
-  const [otpDisabled, setOtpDisabled] = useState(true);
+  const [otpDisabled, setOtpDisabled] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function Login() {
     if (typeof window !== "undefined") {
       const isAuth = localStorage.getItem("currentUser");
       let isAdmin = isAuth !== null ? JSON.parse(isAuth) : "";
-      if (typeof isAdmin !== "string" && isAdmin.user.is_staff) {
+      if (typeof isAdmin !== "string" && isAdmin?.user?.is_staff) {
         router.push("/dashboard");
       } else {
       }
@@ -25,54 +25,80 @@ export default function Login() {
   const [form] = Form.useForm();
   const onFinish = (values: any) => {
     setLoading(true);
-    otpDisabled
-      ? axios
-          .post(
-            `https://impressive-domini-royals-1be52931.koyeb.app/api/auth/mobile/`,
-            values
-          )
-          .then(async function (response) {
-            setLoading(false);
-            messageApi.success(response.data.detail);
-            setOtpDisabled(false);
-          })
-          .catch(function (error) {
-            setLoading(false);
+    axios
+      .post(
+        `https://impressive-domini-royals-1be52931.koyeb.app/api/token/`,
+        values
+      )
+      .then(async function (response) {
+        setLoading(false);
 
-            messageApi.open({
-              type: "error",
-              content: error?.response?.data?.detail,
-            });
-          })
-      : axios
-          .post(
-            `https://impressive-domini-royals-1be52931.koyeb.app/api/token/`,
-            values
-          )
-          .then(async function (response) {
-            setLoading(false);
+        if (response?.data?.user?.is_staff) {
+          localStorage.setItem("currentUser", JSON.stringify(response?.data));
+          router.push("./dashboard");
+        } else {
+          messageApi.error(
+            "You Are Not Admin! You Can't Login To The Dashboard"
+          );
+          form.setFieldValue("otp", null);
+          setOtpDisabled(true);
+        }
+      })
+      .catch(function (error) {
+        setLoading(false);
+        messageApi.open({
+          type: "error",
+          content: error?.response?.data?.errors[0].detail,
+        });
+      });
+    otpDisabled;
+    //   ? axios
+    //       .post(
+    //         `https://impressive-domini-royals-1be52931.koyeb.app/api/auth/mobile/`,
+    //         values
+    //       )
+    //       .then(async function (response) {
+    //         setLoading(false);
+    //         messageApi.success(response.data.detail);
+    //         setOtpDisabled(false);
+    //       })
+    //       .catch(function (error) {
+    //         setLoading(false);
 
-            if (response?.data?.user?.is_staff) {
-              localStorage.setItem(
-                "currentUser",
-                JSON.stringify(response?.data)
-              );
-              router.push("./dashboard");
-            } else {
-              messageApi.error(
-                "You Are Not Admin! You Can't Login To The Dashboard"
-              );
-              form.setFieldValue("otp", null);
-              setOtpDisabled(true);
-            }
-          })
-          .catch(function (error) {
-            setLoading(false);
-            messageApi.open({
-              type: "error",
-              content: error?.response?.data?.errors[0].detail,
-            });
-          });
+    //         messageApi.open({
+    //           type: "error",
+    //           content: error?.response?.data?.detail,
+    //         });
+    //       })
+    //   : axios
+    //       .post(
+    //         `https://impressive-domini-royals-1be52931.koyeb.app/api/token/`,
+    //         values
+    //       )
+    //       .then(async function (response) {
+    //         setLoading(false);
+
+    //         if (response?.data?.user?.is_staff) {
+    //           localStorage.setItem(
+    //             "currentUser",
+    //             JSON.stringify(response?.data)
+    //           );
+    //           router.push("./dashboard");
+    //         } else {
+    //           messageApi.error(
+    //             "You Are Not Admin! You Can't Login To The Dashboard"
+    //           );
+    //           form.setFieldValue("otp", null);
+    //           setOtpDisabled(true);
+    //         }
+    //       })
+    //       .catch(function (error) {
+    //         setLoading(false);
+    //         messageApi.open({
+    //           type: "error",
+    //           content: error?.response?.data?.errors[0].detail,
+    //         });
+    //       });
   };
   return (
     <div>
@@ -118,10 +144,10 @@ export default function Login() {
                     backgroundColor: "white",
                     color: "black",
                   }}
-                  disabled={!otpDisabled}
+                  // disabled={!otpDisabled}
                 />
               </Form.Item>
-              {!otpDisabled ? (
+              {/* {!otpDisabled ? (
                 <Form.Item
                   name="token"
                   label={<p className="text-white">OTP</p>}
@@ -131,7 +157,7 @@ export default function Login() {
                 </Form.Item>
               ) : (
                 <></>
-              )}
+              )} */}
               <Form.Item>
                 <Button
                   className="flex justify-center w-60 "
