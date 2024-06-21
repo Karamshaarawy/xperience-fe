@@ -21,6 +21,7 @@ import {
   AiOutlineLogout,
   AiOutlineMenuFold,
   AiOutlineMenuUnfold,
+  AiOutlineTrademark,
 } from "react-icons/ai";
 import { IoCarSportOutline, IoEarthSharp } from "react-icons/io5";
 import { MdCircleNotifications, MdNotifications } from "react-icons/md";
@@ -34,6 +35,8 @@ import { CgOptions } from "react-icons/cg";
 import { GrServices } from "react-icons/gr";
 import { TbReservedLine } from "react-icons/tb";
 import { LuUsers2 } from "react-icons/lu";
+import { PiTrademark } from "react-icons/pi";
+import { BiSolidCarGarage } from "react-icons/bi";
 
 const { Header, Sider, Content } = Layout;
 export default function DashboardLayout({
@@ -199,7 +202,7 @@ export default function DashboardLayout({
                   <Link href={`/dashboard/carMakers`}>
                     <span className="text-white">
                       <Space>
-                        <IoCarSportOutline
+                        <PiTrademark
                           size={collapsed ? 25 : 20}
                           style={{ marginInlineEnd: "10px" }}
                           color="white"
@@ -216,7 +219,7 @@ export default function DashboardLayout({
                   <Link href={`/dashboard/carModels`}>
                     <span className="text-white">
                       <Space>
-                        <IoCarSportOutline
+                        <BiSolidCarGarage
                           size={collapsed ? 25 : 20}
                           style={{ marginInlineEnd: "10px" }}
                           color="white"

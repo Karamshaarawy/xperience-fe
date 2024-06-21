@@ -270,6 +270,9 @@ function CarServicesPage() {
   const [searchForm] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [make, setMake] = useState<number | undefined>(undefined);
+  const [carMakersDropDown, setCarMakersDropDown] = useState<any>([]);
+  const [carModelsDropDown, setCarModelsDropDown] = useState<any>([]);
 
   const [carServicesList, setCarServicesList] = useState<any[]>([]);
   const [carImagesList, setCarImagesList] = useState<any[]>([]);
@@ -293,6 +296,7 @@ function CarServicesPage() {
 
   useEffect(() => {
     getCarServicesList();
+    carMakersSearch();
   }, []);
 
   function getCarServicesList(page: number = 1, pageSize: number = 10) {
@@ -482,6 +486,63 @@ function CarServicesPage() {
     return e?.file?.originFileObj;
   };
 
+  function carMakersSearch(search?: any) {
+    let url = `car-makes/?limit=${9999}`;
+    search ? (url += `&search=${search}`) : null;
+    GetReq(url).then((res) => {
+      if (StatusSuccessCodes.includes(res.status)) {
+        let list: any = [];
+        res.data.results.map((rec: any) => {
+          list.push({
+            label: rec.name,
+            value: rec.id,
+            key: rec.id,
+          });
+        });
+        setCarMakersDropDown(list);
+      } else {
+        res?.errors.forEach((err: any) => {
+          messageApi.error(
+            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+          );
+        });
+      }
+    });
+  }
+
+  function onCarMakerSearch(value: any) {
+    carMakersSearch(value);
+  }
+
+  function carModelsSearch(make?: any, search?: any) {
+    let url = `car-models/?limit=${9999}`;
+    search ? (url += `&search=${search}`) : null;
+    make ? (url += `&make=${make}`) : null;
+    GetReq(url).then((res) => {
+      if (StatusSuccessCodes.includes(res.status)) {
+        let list: any = [];
+        res.data.results.map((rec: any) => {
+          list.push({
+            label: rec.name,
+            value: rec.id,
+            key: rec.id,
+          });
+        });
+        setCarModelsDropDown(list);
+      } else {
+        res?.errors.forEach((err: any) => {
+          messageApi.error(
+            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+          );
+        });
+      }
+    });
+  }
+
+  function onCarModelSearch(value: any) {
+    carModelsSearch(make, value);
+  }
+
   return (
     <Fragment>
       {contextHolder}
@@ -568,21 +629,44 @@ function CarServicesPage() {
           >
             <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row gap-2 justify-between">
               <Form.Item
-                label="Model"
-                name="model"
-                rules={[{ required: true }]}
-                className="w-full"
-              >
-                <Input placeholder="Enter Car Model" />
-              </Form.Item>
-              <Form.Item
                 label="Make"
                 name="make"
                 rules={[{ required: true }]}
                 className="w-full"
               >
-                <Input placeholder="Enter Car Manufacturer" />
+                <Select
+                  showSearch
+                  placeholder="Select Car Maker"
+                  onSearch={onCarMakerSearch}
+                  filterOption={false}
+                  optionFilterProp="children"
+                  options={carMakersDropDown}
+                  allowClear={true}
+                  onClear={() => carMakersSearch()}
+                  onSelect={(e) => {
+                    setMake(e);
+                    carModelsSearch(e, null);
+                  }}
+                />
               </Form.Item>
+              <Form.Item
+                label="Model"
+                name="model"
+                rules={[{ required: true }]}
+                className="w-full"
+              >
+                <Select
+                  showSearch
+                  placeholder="Select Car Maker"
+                  onSearch={onCarModelSearch}
+                  filterOption={false}
+                  optionFilterProp="children"
+                  options={carModelsDropDown}
+                  allowClear={true}
+                  onClear={() => carModelsSearch()}
+                />
+              </Form.Item>
+
               <Form.Item
                 label="Year"
                 name="year"
