@@ -194,6 +194,40 @@ export default function DashboardLayout({
                 ),
               },
               {
+                key: `/dashboard/carMakers`,
+                label: (
+                  <Link href={`/dashboard/carMakers`}>
+                    <span className="text-white">
+                      <Space>
+                        <IoCarSportOutline
+                          size={collapsed ? 25 : 20}
+                          style={{ marginInlineEnd: "10px" }}
+                          color="white"
+                        />
+                        Car Makers
+                      </Space>
+                    </span>
+                  </Link>
+                ),
+              },
+              {
+                key: `/dashboard/carModels`,
+                label: (
+                  <Link href={`/dashboard/carModels`}>
+                    <span className="text-white">
+                      <Space>
+                        <IoCarSportOutline
+                          size={collapsed ? 25 : 20}
+                          style={{ marginInlineEnd: "10px" }}
+                          color="white"
+                        />
+                        Car Models
+                      </Space>
+                    </span>
+                  </Link>
+                ),
+              },
+              {
                 key: `/dashboard/carServices`,
                 label: (
                   <Link href={`/dashboard/carServices`}>
