@@ -25,7 +25,7 @@ import {
 } from "react-icons/ai";
 import { IoCarSportOutline, IoEarthSharp } from "react-icons/io5";
 import { MdCircleNotifications, MdNotifications } from "react-icons/md";
-import { RiLogoutBoxRLine } from "react-icons/ri";
+import { RiHotelFill, RiLogoutBoxRLine } from "react-icons/ri";
 import { RxDashboard } from "react-icons/rx";
 import { SiHiltonhotelsandresorts } from "react-icons/si";
 
@@ -153,14 +153,16 @@ export default function DashboardLayout({
             style={{
               backgroundColor: "#292D4A",
             }}
-            selectedKeys={[
-              pathname,
-              pathname.includes("carServices")
-                ? `/dashboard/carServices`
-                : pathname.includes("hotelServices")
-                ? `/dashboard/hotelServices`
-                : "",
-            ]}
+            // selectedKeys={[
+            //   pathname,
+            //   pathname.includes("carServices")
+            //     ? `/dashboard/carServices`
+            //     : pathname.includes("hotelServices")
+            //     ? `/dashboard/hotelServices`
+            //     : pathname.includes("hotelServices")
+            //     ? `/dashboard/hotelServices`
+            //     : "",
+            // ]}
             items={[
               {
                 key: `/dashboard`,
@@ -259,6 +261,23 @@ export default function DashboardLayout({
                           color="white"
                         />
                         Car Reservations
+                      </Space>
+                    </span>
+                  </Link>
+                ),
+              },
+              {
+                key: `/dashboard/hotelServicesFeatures`,
+                label: (
+                  <Link href={`/dashboard/hotelServicesFeatures`}>
+                    <span className="text-white">
+                      <Space>
+                        <RiHotelFill
+                          size={collapsed ? 25 : 20}
+                          style={{ marginInlineEnd: "10px" }}
+                          color="white"
+                        />
+                        Hotel Service Features
                       </Space>
                     </span>
                   </Link>
