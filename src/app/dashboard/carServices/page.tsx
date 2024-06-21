@@ -297,6 +297,7 @@ function CarServicesPage() {
   useEffect(() => {
     getCarServicesList();
     carMakersSearch();
+    carModelsSearch();
   }, []);
 
   function getCarServicesList(page: number = 1, pageSize: number = 10) {
@@ -325,6 +326,16 @@ function CarServicesPage() {
     } else {
       params.delete("search");
     }
+    if (values.make) {
+      params.set("make", values.make);
+    } else {
+      params.delete("make");
+    }
+    if (values.model) {
+      params.set("model", values.model);
+    } else {
+      params.delete("model");
+    }
 
     replace(`${pathname}?${params.toString()}`);
     getCarServicesList();
@@ -335,6 +346,7 @@ function CarServicesPage() {
     params.has("search") && params.delete("search");
     replace(`${pathname}`);
     getCarServicesList();
+    setMake(undefined);
   };
 
   function openAddModel() {
@@ -376,6 +388,7 @@ function CarServicesPage() {
     setCarsFileList([]);
     setAddEditImagesOpen(false);
     setImageUrl(undefined);
+    setMake(undefined);
   }
 
   type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
@@ -657,7 +670,7 @@ function CarServicesPage() {
               >
                 <Select
                   showSearch
-                  placeholder="Select Car Maker"
+                  placeholder="Select Car Model"
                   onSearch={onCarModelSearch}
                   filterOption={false}
                   optionFilterProp="children"
@@ -802,6 +815,34 @@ function CarServicesPage() {
                   onChange={(e: any) => {
                     e.target.value === "" ? onSearchReset() : null;
                   }}
+                />
+              </Form.Item>
+              <Form.Item name="make">
+                <Select
+                  showSearch
+                  placeholder="Select Car Maker"
+                  onSearch={onCarMakerSearch}
+                  filterOption={false}
+                  optionFilterProp="children"
+                  options={carMakersDropDown}
+                  allowClear={true}
+                  onClear={() => carMakersSearch()}
+                  onSelect={(e) => {
+                    setMake(e);
+                    carModelsSearch(e, null);
+                  }}
+                />
+              </Form.Item>
+              <Form.Item name="model">
+                <Select
+                  showSearch
+                  placeholder="Select Car Model"
+                  onSearch={onCarModelSearch}
+                  filterOption={false}
+                  optionFilterProp="children"
+                  options={carModelsDropDown}
+                  allowClear={true}
+                  onClear={() => carModelsSearch()}
                 />
               </Form.Item>
               <Button
