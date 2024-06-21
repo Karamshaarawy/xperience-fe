@@ -34,6 +34,16 @@ function HotelServicesPage() {
       key: "name",
     },
     {
+      title: "Name English",
+      dataIndex: "name_en",
+      key: "nameEn",
+    },
+    {
+      title: "Name Arabic",
+      dataIndex: "name_ar",
+      key: "nameAr",
+    },
+    {
       title: "Description",
       dataIndex: "description",
       key: "description",
@@ -505,12 +515,20 @@ function HotelServicesPage() {
           >
             <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row gap-2 justify-between">
               <Form.Item
-                label="Name"
-                name="name"
+                label="Name In English"
+                name="name_en"
                 rules={[{ required: true }]}
                 className="w-full"
               >
-                <Input placeholder="Enter Hotel Name" />
+                <Input placeholder="Enter Hotel Name In English" />
+              </Form.Item>
+              <Form.Item
+                label="Name In Arabic"
+                name="name_ar"
+                rules={[{ required: true }]}
+                className="w-full"
+              >
+                <Input placeholder="Enter Hotel Name In Arabic" />
               </Form.Item>
             </div>
             <Form.Item
