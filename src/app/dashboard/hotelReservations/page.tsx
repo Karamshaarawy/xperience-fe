@@ -61,8 +61,27 @@ function ReservationsPage() {
     },
     {
       title: "Status",
-      dataIndex: "status",
+      // dataIndex: "status",
       key: "status",
+      render: (record: any) => (
+        <>
+          <Select
+            className="w-full"
+            value={record?.status}
+            onChange={(value) => editReservationStatus(value, record.id)}
+          >
+            <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
+              Confirmed
+            </Select.Option>
+            <Select.Option
+              key="WAITING_FOR_PAYMENT"
+              value={"WAITING_FOR_PAYMENT"}
+            >
+              Waiting For Payment
+            </Select.Option>
+          </Select>
+        </>
+      ),
     },
     {
       title: "Edit",
@@ -82,6 +101,25 @@ function ReservationsPage() {
       ),
     },
   ];
+
+  function editReservationStatus(value: any, id: any) {
+    setPostEditRequestLoading(true);
+    PatchReq(`reservations/${id}/`, { status: value }).then((res) => {
+      setPostEditRequestLoading(false);
+      if (StatusSuccessCodes.includes(res.status)) {
+        messageApi.success("Reservation Updated Successfully");
+        closeAddHotelReservation();
+        getReservationsList();
+      } else {
+        getReservationsList();
+        res?.errors.forEach((err: any) => {
+          messageApi.error(
+            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+          );
+        });
+      }
+    });
+  }
 
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
@@ -606,7 +644,7 @@ function ReservationsPage() {
             columns={columns}
             rowKey={"id"}
             scroll={{ x: 0 }}
-            loading={loadReservationsList}
+            loading={loadReservationsList || postEditRequestLoading}
             pagination={{
               current: currentPage,
               total: reservationsCount,

@@ -71,32 +71,70 @@ function CarReservations() {
     },
     {
       title: "Status",
-      dataIndex: "status",
+      // dataIndex: "status",
       key: "status",
+      render: (record: any) => (
+        <>
+          <Select
+            className="w-full"
+            value={record?.status}
+            onChange={(value) => editReservationStatus(value, record.id)}
+          >
+            <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
+              Confirmed
+            </Select.Option>
+            <Select.Option
+              key="WAITING_FOR_PAYMENT"
+              value={"WAITING_FOR_PAYMENT"}
+            >
+              Waiting For Payment
+            </Select.Option>
+          </Select>
+        </>
+      ),
     },
     {
       title: "Created By",
-      dataIndex: "created_by",
+      dataIndex: ["created_by", "name"],
       key: "created_by",
     },
-    {
-      title: "Edit",
-      key: "edit",
-      render: (record: any) => (
-        <Button
-          style={{
-            backgroundColor: "#363B5E",
-            borderColor: "#F1DF78",
-          }}
-          className=" text-white"
-          id={record.id}
-          onClick={() => openAddEditModel(record)}
-        >
-          Edit
-        </Button>
-      ),
-    },
+    // {
+    //   title: "Edit",
+    //   key: "edit",
+    //   render: (record: any) => (
+    //     <Button
+    //       style={{
+    //         backgroundColor: "#363B5E",
+    //         borderColor: "#F1DF78",
+    //       }}
+    //       className=" text-white"
+    //       id={record.id}
+    //       onClick={() => openAddEditModel(record)}
+    //     >
+    //       Edit
+    //     </Button>
+    //   ),
+    // },
   ];
+
+  function editReservationStatus(value: any, id: any) {
+    setPostEditRequestLoading(true);
+    PatchReq(`reservations/${id}/`, { status: value }).then((res) => {
+      setPostEditRequestLoading(false);
+      if (StatusSuccessCodes.includes(res.status)) {
+        messageApi.success("Reservation Updated Successfully");
+        closeAddCarReservation();
+        getReservationsList();
+      } else {
+        getReservationsList();
+        res?.errors.forEach((err: any) => {
+          messageApi.error(
+            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+          );
+        });
+      }
+    });
+  }
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
   const { replace } = useRouter();
@@ -176,30 +214,30 @@ function CarReservations() {
 
   function openAddEditModel(record?: any) {
     setAddCarReservationModalOpen(true);
-    record.id ? setIsEdit(true) : setIsEdit(false);
-    setRecordId(record?.id);
-    record.id
-      ? addCarReservationForm.setFieldsValue({
-          user: record?.user,
-          car_service_id: record?.car_reservations[0]?.car_service?.id,
-          status: record.status,
-          subscription_option: record?.car_reservations[0]?.subscription_option,
-          pickup_time: dayjs(record?.car_reservations[0]?.pickup_time),
-          pickup_address: record?.car_reservations[0]?.pickup_address,
-          pickup_lat: record?.car_reservations[0]?.pickup_lat,
-          pickup_long: record?.car_reservations[0]?.pickup_long,
-          pickup_url: record?.car_reservations[0]?.pickup_url,
-          dropoff_address: record?.car_reservations[0]?.dropoff_address,
-          dropoff_lat: record?.car_reservations[0]?.dropoff_lat,
-          dropoff_long: record?.car_reservations[0]?.dropoff_long,
-          dropoff_url: record?.car_reservations[0]?.dropoff_url,
-          terminal: record?.car_reservations[0]?.terminal,
-          flight_number: record?.car_reservations[0]?.flight_number,
-          extras: record?.car_reservations[0]?.extras,
-          final_price: record?.car_reservations[0]?.final_price,
-          options: record?.car_reservations[0]?.options,
-        })
-      : null;
+    // record.id ? setIsEdit(true) : setIsEdit(false);
+    // setRecordId(record?.id);
+    // record.id
+    //   ? addCarReservationForm.setFieldsValue({
+    //       user: record?.user,
+    //       car_service_id: record?.car_reservations[0]?.car_service?.id,
+    //       status: record.status,
+    //       subscription_option: record?.car_reservations[0]?.subscription_option,
+    //       pickup_time: dayjs(record?.car_reservations[0]?.pickup_time),
+    //       pickup_address: record?.car_reservations[0]?.pickup_address,
+    //       pickup_lat: record?.car_reservations[0]?.pickup_lat,
+    //       pickup_long: record?.car_reservations[0]?.pickup_long,
+    //       pickup_url: record?.car_reservations[0]?.pickup_url,
+    //       dropoff_address: record?.car_reservations[0]?.dropoff_address,
+    //       dropoff_lat: record?.car_reservations[0]?.dropoff_lat,
+    //       dropoff_long: record?.car_reservations[0]?.dropoff_long,
+    //       dropoff_url: record?.car_reservations[0]?.dropoff_url,
+    //       terminal: record?.car_reservations[0]?.terminal,
+    //       flight_number: record?.car_reservations[0]?.flight_number,
+    //       extras: record?.car_reservations[0]?.extras,
+    //       final_price: record?.car_reservations[0]?.final_price,
+    //       options: record?.car_reservations[0]?.options,
+    //     })
+    //   : null;
   }
 
   function closeAddCarReservation() {
@@ -749,7 +787,7 @@ function CarReservations() {
             columns={columns}
             rowKey={"id"}
             scroll={{ x: 0 }}
-            loading={loadReservationsList}
+            loading={loadReservationsList || postEditRequestLoading}
             pagination={{
               current: currentPage,
               total: reservationsCount,
