@@ -1,5 +1,7 @@
 "use client";
-import { GetReq, PatchReq } from "@/app/api/api";
+import { initializeApp } from "firebase/app";
+import { getMessaging, getToken, onMessage } from "firebase/messaging";
+
 import {
   Avatar,
   Badge,
@@ -9,8 +11,9 @@ import {
   Layout,
   Menu,
   MenuProps,
-  notification,
   Space,
+  message,
+  notification,
 } from "antd";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,22 +24,23 @@ import {
   AiOutlineLogout,
   AiOutlineMenuFold,
   AiOutlineMenuUnfold,
-  AiOutlineTrademark,
 } from "react-icons/ai";
-import { IoCarSportOutline, IoEarthSharp } from "react-icons/io5";
-import { MdCircleNotifications, MdNotifications } from "react-icons/md";
+import { IoCarSportOutline } from "react-icons/io5";
+import { MdCircleNotifications } from "react-icons/md";
 import { RiHotelFill, RiLogoutBoxRLine } from "react-icons/ri";
 import { RxDashboard } from "react-icons/rx";
 import { SiHiltonhotelsandresorts } from "react-icons/si";
 
-import { StatusSuccessCodes } from "../api/successStatus";
-import { FaRegUserCircle } from "react-icons/fa";
+import { BiSolidCarGarage } from "react-icons/bi";
+import { BsInfoCircleFill } from "react-icons/bs";
 import { CgOptions } from "react-icons/cg";
+import { FaRegUserCircle } from "react-icons/fa";
 import { GrServices } from "react-icons/gr";
-import { TbReservedLine } from "react-icons/tb";
 import { LuUsers2 } from "react-icons/lu";
 import { PiTrademark } from "react-icons/pi";
-import { BiSolidCarGarage } from "react-icons/bi";
+import { TbReservedLine } from "react-icons/tb";
+import { PostReq } from "../api/api";
+import { StatusSuccessCodes } from "../api/successStatus";
 
 const { Header, Sider, Content } = Layout;
 export default function DashboardLayout({
@@ -49,15 +53,17 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const [prefix_pathname, setPrefix_pathname] = useState<string>("");
   const [currentUser, setCurrentUser] = useState<any>({});
-  //   const { t } = useTranslation(lng, "layout");
   const items: MenuProps["items"] = [];
   const [notifications, setNotifications] = useState<any>([]);
   const [open, setOpen] = useState(false);
   const [numberNotification, setNumberNotification] = useState(0);
   const [apiNotification, contextHolder] = notification.useNotification();
+  const [messageApi, contextHolderMessage] = message.useMessage();
   const isEffectCalledRef = useRef(false);
   const [userName, setUserName] = useState<string>("");
   useEffect(() => {
+    requestPermission();
+
     if (typeof window !== "undefined") {
       const currentUser: any = localStorage.getItem("currentUser");
       setUserName(currentUser?.user?.name ? currentUser?.user?.name : "Admin");
@@ -74,6 +80,66 @@ export default function DashboardLayout({
       }
     }
   }, [router, currentUser.id]);
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAnj8clJ6oJfReQLYU7LlK7ZF4fxiubvhc",
+    authDomain: "experience-9062b.firebaseapp.com",
+    projectId: "experience-9062b",
+    storageBucket: "experience-9062b.appspot.com",
+    messagingSenderId: "514143788543",
+    appId: "1:514143788543:web:bfcba670f8ec1b19025bca",
+    measurementId: "G-TXY42BLJYY",
+  };
+  const app = initializeApp(firebaseConfig);
+  const messaging = getMessaging(app);
+
+  function requestPermission() {
+    Notification.requestPermission().then((permission) => {
+      if (permission === "granted") {
+        return getToken(messaging, {
+          vapidKey:
+            "BEH0OMvStZlMB91AoHer9AGH02amwbydsDMh-Dvs98_bGTu5_Dh8AjwyQR5fUboWdWe7nAAQHaMmXLr4DivpK4c",
+        })
+          .then((currentToken: any) => {
+            if (currentToken) {
+              PostReq("devices", {
+                registration_id: `${currentToken}`,
+                type: "web",
+              }).then((res: any) => {
+                if (StatusSuccessCodes.includes(res.status)) {
+                } else {
+                  res?.errors.forEach((err: any) => {
+                    messageApi.error(
+                      `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+                    );
+                  });
+                }
+              });
+            } else {
+              console.log("failed to generate the app registration token.");
+            }
+          })
+          .catch((err: any) => {
+            messageApi.error(err);
+          });
+      } else {
+        console.log("User Permission Denied");
+      }
+    });
+  }
+
+  onMessage(messaging, (payload) => {
+    openNotification(payload.notification);
+  });
+
+  const openNotification = (description: any) => {
+    apiNotification.info({
+      message: description.title,
+      description: description.body,
+      placement: "topRight",
+      icon: <BsInfoCircleFill color="#292D4A" />,
+    });
+  };
 
   const handleMenuClick: MenuProps["onClick"] = (e) => {
     setOpen(true);
@@ -121,9 +187,10 @@ export default function DashboardLayout({
   return (
     <>
       {contextHolder}
+      {contextHolderMessage}
       <Layout style={{ minHeight: "100vh" }}>
         <Sider
-          width={220}
+          width={240}
           theme="light"
           trigger={null}
           collapsible
@@ -476,7 +543,7 @@ export default function DashboardLayout({
             style={{
               minHeight: 280,
             }}
-            className={collapsed ? "pl-[80px]" : "pl-[220px]"}
+            className={collapsed ? "pl-[80px]" : "pl-[240px]"}
           >
             <Suspense>{children}</Suspense>
           </Content>
