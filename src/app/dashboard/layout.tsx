@@ -41,6 +41,7 @@ import { PiTrademark } from "react-icons/pi";
 import { TbReservedLine } from "react-icons/tb";
 import { PostReq } from "../api/api";
 import { StatusSuccessCodes } from "../api/successStatus";
+import { ToastContainer } from "react-toastify";
 
 const { Header, Sider, Content } = Layout;
 export default function DashboardLayout({
@@ -62,7 +63,7 @@ export default function DashboardLayout({
   const isEffectCalledRef = useRef(false);
   const [userName, setUserName] = useState<string>("");
   useEffect(() => {
-    requestPermission();
+    // requestPermission();
 
     if (typeof window !== "undefined") {
       const currentUser: any = localStorage.getItem("currentUser");
@@ -81,56 +82,44 @@ export default function DashboardLayout({
     }
   }, [router, currentUser.id]);
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAnj8clJ6oJfReQLYU7LlK7ZF4fxiubvhc",
-    authDomain: "experience-9062b.firebaseapp.com",
-    projectId: "experience-9062b",
-    storageBucket: "experience-9062b.appspot.com",
-    messagingSenderId: "514143788543",
-    appId: "1:514143788543:web:bfcba670f8ec1b19025bca",
-    measurementId: "G-TXY42BLJYY",
-  };
-  const app = initializeApp(firebaseConfig);
-  const messaging = getMessaging(app);
+  // function requestPermission() {
+  //   Notification.requestPermission().then((permission) => {
+  //     if (permission === "granted") {
+  //       return getToken(messaging, {
+  //         vapidKey:
+  //           "BEH0OMvStZlMB91AoHer9AGH02amwbydsDMh-Dvs98_bGTu5_Dh8AjwyQR5fUboWdWe7nAAQHaMmXLr4DivpK4c",
+  //       })
+  //         .then((currentToken: any) => {
+  //           if (currentToken) {
+  //             PostReq("devices", {
+  //               registration_id: `${currentToken}`,
+  //               type: "web",
+  //             }).then((res: any) => {
+  //               if (StatusSuccessCodes.includes(res.status)) {
+  //               } else {
+  //                 res?.errors.forEach((err: any) => {
+  //                   messageApi.error(
+  //                     `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+  //                   );
+  //                 });
+  //               }
+  //             });
+  //           } else {
+  //             console.log("failed to generate the app registration token.");
+  //           }
+  //         })
+  //         .catch((err: any) => {
+  //           messageApi.error(err);
+  //         });
+  //     } else {
+  //       console.log("User Permission Denied");
+  //     }
+  //   });
+  // }
 
-  function requestPermission() {
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        return getToken(messaging, {
-          vapidKey:
-            "BEH0OMvStZlMB91AoHer9AGH02amwbydsDMh-Dvs98_bGTu5_Dh8AjwyQR5fUboWdWe7nAAQHaMmXLr4DivpK4c",
-        })
-          .then((currentToken: any) => {
-            if (currentToken) {
-              PostReq("devices", {
-                registration_id: `${currentToken}`,
-                type: "web",
-              }).then((res: any) => {
-                if (StatusSuccessCodes.includes(res.status)) {
-                } else {
-                  res?.errors.forEach((err: any) => {
-                    messageApi.error(
-                      `${err.attr ? err.attr + ":" + err.detail : err.detail} `
-                    );
-                  });
-                }
-              });
-            } else {
-              console.log("failed to generate the app registration token.");
-            }
-          })
-          .catch((err: any) => {
-            messageApi.error(err);
-          });
-      } else {
-        console.log("User Permission Denied");
-      }
-    });
-  }
-
-  onMessage(messaging, (payload) => {
-    openNotification(payload.notification);
-  });
+  // onMessage(messaging, (payload) => {
+  //   openNotification(payload.notification);
+  // });
 
   const openNotification = (description: any) => {
     apiNotification.info({
@@ -545,7 +534,10 @@ export default function DashboardLayout({
             }}
             className={collapsed ? "pl-[80px]" : "pl-[240px]"}
           >
-            <Suspense>{children}</Suspense>
+            <Suspense>
+              <ToastContainer />
+              {children}
+            </Suspense>
           </Content>
         </Layout>
       </Layout>
