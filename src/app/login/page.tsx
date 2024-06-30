@@ -26,10 +26,7 @@ export default function Login() {
   const onFinish = (values: any) => {
     setLoading(true);
     axios
-      .post(
-        `https://impressive-domini-royals-1be52931.koyeb.app/api/token/`,
-        values
-      )
+      .post(`https://api.xperiences.vip/api/token/`, values)
       .then(async function (response) {
         setLoading(false);
 

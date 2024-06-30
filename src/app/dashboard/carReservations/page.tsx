@@ -70,6 +70,12 @@ function CarReservations() {
       render: (record: any) => record?.car_reservations[0]?.dropoff_address,
     },
     {
+      title: "Price",
+      //   dataIndex: ["car_reservations", "car_service"],
+      key: "price",
+      render: (record: any) => record?.car_reservations[0]?.final_price,
+    },
+    {
       title: "Status",
       // dataIndex: "status",
       key: "status",
@@ -114,6 +120,67 @@ function CarReservations() {
     //       Edit
     //     </Button>
     //   ),
+    // },
+  ];
+  const expandColumns: TableColumnsType<any> = [
+    {
+      title: "pickup_lat",
+      dataIndex: "pickup_lat",
+      key: "pickup_lat",
+      render: (record) => (record === null ? "--" : record),
+    },
+    {
+      title: "pickup_long",
+      dataIndex: "pickup_long",
+      key: "pickup_long",
+      render: (record) => (record === null ? "--" : record),
+    },
+    {
+      title: "pickup_url",
+      dataIndex: "pickup_url",
+      key: "pickup_url",
+      render: (record) => (record === null ? "--" : record),
+    },
+    {
+      title: "dropoff_lat",
+      dataIndex: "dropoff_lat",
+      key: "dropoff_lat",
+      render: (record) => (record === null ? "--" : record),
+    },
+    {
+      title: "dropoff_long",
+      dataIndex: "dropoff_long",
+      key: "dropoff_long",
+      render: (record) => (record === null ? "--" : record),
+    },
+    {
+      title: "dropoff_url",
+      dataIndex: "dropoff_url",
+      key: "dropoff_url",
+      render: (record) => (record === null ? "--" : record),
+    },
+    {
+      title: "terminal",
+      dataIndex: "terminal",
+      key: "terminal",
+      render: (record) => (record === null ? "--" : record),
+    },
+    {
+      title: "flight_number",
+      dataIndex: "flight_number",
+      key: "flight_number",
+      render: (record) => (record === null ? "--" : record),
+    },
+    {
+      title: "extras",
+      dataIndex: "extras",
+      key: "extras",
+      render: (record) => (record === "" ? "--" : record),
+    },
+    // {
+    //   title: "options",
+    //   dataIndex: "options",
+    //   key: "options",
     // },
   ];
 
@@ -788,6 +855,17 @@ function CarReservations() {
             rowKey={"id"}
             scroll={{ x: 0 }}
             loading={loadReservationsList || postEditRequestLoading}
+            expandable={{
+              expandedRowRender: (record) => (
+                <div className="p-1">
+                  <Table
+                    dataSource={record.car_reservations}
+                    columns={expandColumns}
+                    pagination={false}
+                  />
+                </div>
+              ),
+            }}
             pagination={{
               current: currentPage,
               total: reservationsCount,

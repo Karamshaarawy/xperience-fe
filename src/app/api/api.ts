@@ -2,7 +2,7 @@
 import axios from "axios";
 import { ResponseType } from "axios";
 
-const baseUrl = "https://impressive-domini-royals-1be52931.koyeb.app/";
+const baseUrl = "https://api.xperiences.vip/";
 
 export function setAuthorizationToken(token?: string) {
   if (token) {

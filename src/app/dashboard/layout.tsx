@@ -248,23 +248,23 @@ export default function DashboardLayout({
                   </Link>
                 ),
               },
-              {
-                key: `/dashboard/reservations`,
-                label: (
-                  <Link href={`/dashboard/reservations`}>
-                    <span className="text-white">
-                      <Space>
-                        <TbReservedLine
-                          size={collapsed ? 25 : 20}
-                          style={{ marginInlineEnd: "10px" }}
-                          color="white"
-                        />
-                        Reservations
-                      </Space>
-                    </span>
-                  </Link>
-                ),
-              },
+              // {
+              //   key: `/dashboard/reservations`,
+              //   label: (
+              //     <Link href={`/dashboard/reservations`}>
+              //       <span className="text-white">
+              //         <Space>
+              //           <TbReservedLine
+              //             size={collapsed ? 25 : 20}
+              //             style={{ marginInlineEnd: "10px" }}
+              //             color="white"
+              //           />
+              //           Reservations
+              //         </Space>
+              //       </span>
+              //     </Link>
+              //   ),
+              // },
               {
                 key: `/dashboard/carMakers`,
                 label: (

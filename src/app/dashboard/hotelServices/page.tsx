@@ -295,6 +295,8 @@ function HotelServicesPage() {
   const pathname = usePathname();
   const [searchForm] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [hotelFeaturesDropDown, setHotelFeaturesDropDown] = useState<any>([]);
 
   const [hotelServicesList, setHotelServicesList] = useState<any[]>([]);
   const [hotelServicesCount, setHotelServicesCount] = useState<number>(0);
@@ -311,6 +313,7 @@ function HotelServicesPage() {
 
   useEffect(() => {
     getHotelServicesList();
+    getHotelFeatures();
   }, []);
   const [loadHotelServicesList, setLoadHotelServicesList] =
     useState<any>(false);
@@ -369,6 +372,7 @@ function HotelServicesPage() {
   }
 
   function addEditHotelService(values: any) {
+    // values.features = [values.features];
     const data = new FormData();
     for (const key in values) {
       if (key === "image" && typeof values[key] === "string") {
@@ -379,7 +383,7 @@ function HotelServicesPage() {
     }
     setPostEditRequestLoading(true);
     isEdit
-      ? PatchReq(`hotel-services/${recordId}/`, data).then((res) => {
+      ? PatchReq(`hotel-services/${recordId}/`, values).then((res) => {
           setPostEditRequestLoading(false);
           if (StatusSuccessCodes.includes(res.status)) {
             messageApi.success("Hotel Service Updated Successfully");
@@ -393,7 +397,7 @@ function HotelServicesPage() {
             });
           }
         })
-      : PostReq(`hotel-services/`, data).then((res) => {
+      : PostReq(`hotel-services/`, values).then((res) => {
           setPostEditRequestLoading(false);
           if (StatusSuccessCodes.includes(res.status)) {
             messageApi.success("Hotel Service Added Successfully");
@@ -428,6 +432,34 @@ function HotelServicesPage() {
       }
     });
   };
+
+  function getHotelFeatures() {
+    let url = `hotel-service-features/?limit=99999`;
+    GetReq(url).then((res: any) => {
+      if (StatusSuccessCodes.includes(res.status)) {
+        let list: any = [];
+        res.data.results.map((rec: any) => {
+          list.push({
+            label: rec.name,
+            value: rec.id,
+            key: rec.id,
+          });
+        });
+        setHotelFeaturesDropDown(list);
+      } else {
+        res?.errors.forEach((err: any) => {
+          messageApi.error(
+            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+          );
+        });
+      }
+    });
+  }
+  // const OPTIONS = ["Apples", "Nails", "Bananas", "Helicopters"];
+
+  const filteredOptions = hotelFeaturesDropDown.filter(
+    (o: any) => !selectedItems.includes(o)
+  );
 
   return (
     <Fragment>
@@ -565,6 +597,8 @@ function HotelServicesPage() {
                   placeholder="Number Of Beds"
                 />
               </Form.Item>
+            </div>
+            <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row gap-2 justify-between">
               <Form.Item
                 label="View"
                 name="view"
@@ -572,6 +606,24 @@ function HotelServicesPage() {
                 className="w-full"
               >
                 <Input placeholder="Enter Room View" />
+              </Form.Item>
+              <Form.Item
+                label="Features"
+                name="features"
+                rules={[{ required: true }]}
+                className="w-full"
+              >
+                <Select
+                  mode="multiple"
+                  placeholder="Select Features"
+                  value={selectedItems}
+                  onChange={setSelectedItems}
+                  style={{ width: "100%" }}
+                  options={filteredOptions.map((item: any) => ({
+                    value: item.value,
+                    label: item.label,
+                  }))}
+                />
               </Form.Item>
             </div>
             <Form.Item
