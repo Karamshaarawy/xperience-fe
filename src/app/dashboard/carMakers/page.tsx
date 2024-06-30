@@ -33,17 +33,17 @@ function CarMakersPage() {
       dataIndex: "name_ar",
       key: "name_en",
     },
-    {
-      title: "Status",
-      dataIndex: "active",
-      key: "active",
-      render: (active: boolean) =>
-        active ? (
-          <Badge status="success" text="Active" />
-        ) : (
-          <Badge status="error" text="InActive" />
-        ),
-    },
+    // {
+    //   title: "Status",
+    //   dataIndex: "active",
+    //   key: "active",
+    //   render: (active: boolean) =>
+    //     active ? (
+    //       <Badge status="success" text="Active" />
+    //     ) : (
+    //       <Badge status="error" text="InActive" />
+    //     ),
+    // },
 
     {
       title: "Edit",
@@ -269,7 +269,7 @@ function CarMakersPage() {
               </Form.Item>
             </div>
 
-            <Form.Item
+            {/* <Form.Item
               name="active"
               label="Status"
               rules={[{ required: true }]}
@@ -286,7 +286,7 @@ function CarMakersPage() {
                   InActive
                 </Select.Option>
               </Select>
-            </Form.Item>
+            </Form.Item> */}
             <SubmitButton
               form={AddEditMakerForm}
               loading={postEditRequestLoading}
@@ -317,7 +317,7 @@ function CarMakersPage() {
                   />
                 </Form.Item>
 
-                <Form.Item name="status">
+                {/* <Form.Item name="status">
                   <Select placeholder="status" className="min-w-[120px]">
                     <Select.Option key="active" value={true}>
                       Active
@@ -326,7 +326,7 @@ function CarMakersPage() {
                       InActive
                     </Select.Option>
                   </Select>
-                </Form.Item>
+                </Form.Item> */}
 
                 <Button
                   htmlType="submit"
