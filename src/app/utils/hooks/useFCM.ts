@@ -21,3 +21,5 @@ const useFCM = () => {
 
   return { fcmToken, messages };
 };
+
+export default useFCM;

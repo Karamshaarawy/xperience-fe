@@ -155,7 +155,9 @@ function ReservationsPage() {
 
   function getReservationsList(page: number = 1, pageSize: number = 10) {
     setCurrentPage(page);
-    let url = `reservations/?limit=${pageSize}&offset=${(page - 1) * pageSize}`;
+    let url = `reservations/?limit=${pageSize}&offset=${
+      (page - 1) * pageSize
+    }&has_hotel_reservations=true`;
     params.forEach((value: any, key: any) => (url += `&${key}=${value}`));
     setLoadReservationsList(true);
     GetReq(url).then((res) => {
