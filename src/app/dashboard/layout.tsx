@@ -26,7 +26,7 @@ import {
   AiOutlineMenuUnfold,
 } from "react-icons/ai";
 import { IoCarSportOutline } from "react-icons/io5";
-import { MdCircleNotifications } from "react-icons/md";
+import { MdCircleNotifications, MdNotifications } from "react-icons/md";
 import { RiHotelFill, RiLogoutBoxRLine } from "react-icons/ri";
 import { RxDashboard } from "react-icons/rx";
 import { SiHiltonhotelsandresorts } from "react-icons/si";
@@ -39,7 +39,7 @@ import { GrServices } from "react-icons/gr";
 import { LuUsers2 } from "react-icons/lu";
 import { PiTrademark } from "react-icons/pi";
 import { TbReservedLine } from "react-icons/tb";
-import { PostReq } from "../api/api";
+import { GetReq, PatchReq, PostReq } from "../api/api";
 import { StatusSuccessCodes } from "../api/successStatus";
 import { ToastContainer } from "react-toastify";
 import { firebaseCloudMessaging } from "../config/firebase";
@@ -118,48 +118,63 @@ export default function DashboardLayout({
         isEffectCalledRef.current = true;
       }
     }
+    getListNotifications();
   }, [router, currentUser.id]);
 
-  // const fcmmessaging = messaging();
+  function getListNotifications() {
+    let numberNotif = 0;
+    GetReq("notifications/?limit=10000&offset=0").then((res) => {
+      if (StatusSuccessCodes.includes(res?.status)) {
+        setNotifications(
+          res?.data?.results?.map((item: any) => {
+            setNumberNotification((numberNotif += item.read ? 0 : 1));
+            return {
+              key: item.id,
+              onClick: () => {
+                !item.read && markAsRead(item.id);
+              },
+              label: (
+                <div
+                  className="flex justify-between"
+                  style={{
+                    backgroundColor: item.read ? "white" : "#f3f6f4",
+                    height: "70px",
+                    padding: "7px",
+                    borderRadius: "5px",
+                  }}
+                >
+                  <Space className="flex flex-row">
+                    <MdNotifications size={15} />
+                    <span className="flex flex-col">
+                      <b className="w-[150px] sm:w-[250px] lg:w-[400px] xl:w-[400px] ">
+                        {" "}
+                        {item.title}
+                      </b>
+                      <small>
+                        {new Date(item.created_at).toLocaleString("CA", {
+                          hour12: true,
+                        })}
+                      </small>
+                    </span>
+                  </Space>
+                  {!item.read && <Badge status="processing" />}
+                </div>
+              ),
+            };
+          })
+        );
+      }
+    });
+  }
 
-  // function requestPermission() {
-  //   Notification.requestPermission().then((permission) => {
-  //     if (permission === "granted") {
-  //       return getToken(fcmmessaging, {
-  //         vapidKey:
-  //           "BEH0OMvStZlMB91AoHer9AGH02amwbydsDMh-Dvs98_bGTu5_Dh8AjwyQR5fUboWdWe7nAAQHaMmXLr4DivpK4c",
-  //       })
-  //         .then((currentToken: any) => {
-  //           if (currentToken) {
-  //             PostReq("devices", {
-  //               registration_id: `${currentToken}`,
-  //               type: "web",
-  //             }).then((res: any) => {
-  //               if (StatusSuccessCodes.includes(res.status)) {
-  //               } else {
-  //                 res?.errors.forEach((err: any) => {
-  //                   messageApi.error(
-  //                     `${err.attr ? err.attr + ":" + err.detail : err.detail} `
-  //                   );
-  //                 });
-  //               }
-  //             });
-  //           } else {
-  //             console.log("failed to generate the app registration token.");
-  //           }
-  //         })
-  //         .catch((err: any) => {
-  //           messageApi.error(err);
-  //         });
-  //     } else {
-  //       console.log("User Permission Denied");
-  //     }
-  //   });
-  // }
+  function markAsRead(id: string) {
+    PatchReq(`notifications/${id}`, { read: true }).then((res) => {
+      if (StatusSuccessCodes.includes(res?.status)) {
+        getListNotifications();
+      }
+    });
+  }
 
-  // onMessage(fcmmessaging, (payload) => {
-  //   openNotification(payload.notification);
-  // });
   const openNotification = (description: any) => {
     apiNotification.info({
       message: description.title,
