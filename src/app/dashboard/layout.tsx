@@ -83,46 +83,46 @@ export default function DashboardLayout({
     }
   }, [router, currentUser.id]);
 
-  const fcmmessaging = messaging();
+  // const fcmmessaging = messaging();
 
-  function requestPermission() {
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        return getToken(fcmmessaging, {
-          vapidKey:
-            "BEH0OMvStZlMB91AoHer9AGH02amwbydsDMh-Dvs98_bGTu5_Dh8AjwyQR5fUboWdWe7nAAQHaMmXLr4DivpK4c",
-        })
-          .then((currentToken: any) => {
-            if (currentToken) {
-              PostReq("devices", {
-                registration_id: `${currentToken}`,
-                type: "web",
-              }).then((res: any) => {
-                if (StatusSuccessCodes.includes(res.status)) {
-                } else {
-                  res?.errors.forEach((err: any) => {
-                    messageApi.error(
-                      `${err.attr ? err.attr + ":" + err.detail : err.detail} `
-                    );
-                  });
-                }
-              });
-            } else {
-              console.log("failed to generate the app registration token.");
-            }
-          })
-          .catch((err: any) => {
-            messageApi.error(err);
-          });
-      } else {
-        console.log("User Permission Denied");
-      }
-    });
-  }
+  // function requestPermission() {
+  //   Notification.requestPermission().then((permission) => {
+  //     if (permission === "granted") {
+  //       return getToken(fcmmessaging, {
+  //         vapidKey:
+  //           "BEH0OMvStZlMB91AoHer9AGH02amwbydsDMh-Dvs98_bGTu5_Dh8AjwyQR5fUboWdWe7nAAQHaMmXLr4DivpK4c",
+  //       })
+  //         .then((currentToken: any) => {
+  //           if (currentToken) {
+  //             PostReq("devices", {
+  //               registration_id: `${currentToken}`,
+  //               type: "web",
+  //             }).then((res: any) => {
+  //               if (StatusSuccessCodes.includes(res.status)) {
+  //               } else {
+  //                 res?.errors.forEach((err: any) => {
+  //                   messageApi.error(
+  //                     `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+  //                   );
+  //                 });
+  //               }
+  //             });
+  //           } else {
+  //             console.log("failed to generate the app registration token.");
+  //           }
+  //         })
+  //         .catch((err: any) => {
+  //           messageApi.error(err);
+  //         });
+  //     } else {
+  //       console.log("User Permission Denied");
+  //     }
+  //   });
+  // }
 
-  onMessage(fcmmessaging, (payload) => {
-    openNotification(payload.notification);
-  });
+  // onMessage(fcmmessaging, (payload) => {
+  //   openNotification(payload.notification);
+  // });
 
   const openNotification = (description: any) => {
     apiNotification.info({
