@@ -39,7 +39,7 @@ import { GrServices } from "react-icons/gr";
 import { LuUsers2 } from "react-icons/lu";
 import { PiTrademark } from "react-icons/pi";
 import { TbReservedLine } from "react-icons/tb";
-import { GetReq, PatchReq, PostReq } from "../api/api";
+import { GetReq, PatchReq } from "../api/api";
 import { StatusSuccessCodes } from "../api/successStatus";
 import { ToastContainer } from "react-toastify";
 import { firebaseCloudMessaging } from "../config/firebase";
