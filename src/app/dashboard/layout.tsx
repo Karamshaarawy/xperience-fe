@@ -42,7 +42,7 @@ import { TbReservedLine } from "react-icons/tb";
 import { PostReq } from "../api/api";
 import { StatusSuccessCodes } from "../api/successStatus";
 import { ToastContainer } from "react-toastify";
-import { messaging } from "../utils/firebase";
+import { firebaseCloudMessaging } from "../config/firebase";
 
 const { Header, Sider, Content } = Layout;
 export default function DashboardLayout({
@@ -50,6 +50,43 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const [fcmToken, setFcmToken] = useState<string | undefined>(undefined);
+  const [messages, setMessages] = useState<string>("");
+  const getToken = async () => {
+    try {
+      const token = await firebaseCloudMessaging.init();
+      if (token) {
+        await firebaseCloudMessaging.getMessage();
+        setFcmToken(token);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/firebase-messaging-sw.js")
+        .then((registration) =>
+          console.log("service worker registered Successfully", registration)
+        )
+        .catch((error) => {
+          console.log("service worker registration Failed", error);
+        });
+
+      navigator.serviceWorker.addEventListener("message", (event) => {
+        setMessages(event.data.notification.title);
+        openNotification(event.data.notification);
+      });
+    }
+
+    async function setToken() {
+      await getToken();
+    }
+
+    setToken();
+  }, [messages]);
   //   const { setLoginData, user }: any = useContext(LoginDataContext);
   const router = useRouter();
   const pathname = usePathname();
@@ -123,7 +160,6 @@ export default function DashboardLayout({
   // onMessage(fcmmessaging, (payload) => {
   //   openNotification(payload.notification);
   // });
-
   const openNotification = (description: any) => {
     apiNotification.info({
       message: description.title,
@@ -539,6 +575,7 @@ export default function DashboardLayout({
           >
             <Suspense>
               <ToastContainer />
+              {}
               {children}
             </Suspense>
           </Content>
