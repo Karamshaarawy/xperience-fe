@@ -6,6 +6,7 @@ import isAuth from "../../components/isAuth";
 function Home() {
   const pathname = usePathname();
   useEffect(() => {}, []);
+
   return <></>;
 }
 
