@@ -16,18 +16,6 @@ import {
 } from "chart.js";
 import { Tooltip, Legend, ArcElement } from "chart.js";
 
-export const options = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: "top" as const,
-    },
-    title: {
-      display: true,
-      text: "Total Reservations Count",
-    },
-  },
-};
 ChartJS.register(
   ArcElement,
   CategoryScale,
@@ -58,7 +46,18 @@ function Dashboard() {
     totals: [],
   });
   const isEffectRefreshRef = useRef(false);
-
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Total Reservations Count",
+      },
+    },
+  };
   useEffect(() => {
     if (!isEffectRefreshRef.current) {
       getStatistics();
