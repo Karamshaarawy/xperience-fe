@@ -557,7 +557,7 @@ function ReservationsPage() {
             >
               <TextArea className="w-full" />
             </Form.Item>
-            <Form.Item
+            {/* <Form.Item
               className="w-full"
               name="additional_fees"
               label="Additional Fees"
@@ -568,21 +568,21 @@ function ReservationsPage() {
                   addHotelReservationForm.setFieldValue("final_price", null);
                 }}
               />
-            </Form.Item>
+            </Form.Item> */}
             <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row gap-2 items-center">
-              <Form.Item label="  ">
+              {/* <Form.Item label="  ">
                 <Button onClick={calculateFinalPrice}>
                   Calculate Final Price
                 </Button>
-              </Form.Item>
-              <Form.Item
+              </Form.Item> */}
+              {/* <Form.Item
                 className="w-full"
                 name="final_price"
                 label="Final Price"
                 rules={[{ required: true }]}
               >
                 <InputNumber className="w-full" />
-              </Form.Item>
+              </Form.Item> */}
             </div>
             {/* <Form.Item
               className="w-full"
