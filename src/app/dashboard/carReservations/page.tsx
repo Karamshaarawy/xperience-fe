@@ -239,7 +239,7 @@ function CarReservations() {
     setCurrentPage(page);
     let url = `reservations/?limit=${pageSize}&offset=${
       (page - 1) * pageSize
-    }has_car_reservations=true`;
+    }&has_car_reservations=true`;
     params.forEach((value: any, key: any) => (url += `&${key}=${value}`));
     setLoadReservationsList(true);
     GetReq(url).then((res) => {
