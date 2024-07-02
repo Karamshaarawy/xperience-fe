@@ -34,12 +34,12 @@ function CarServicesPage() {
   const columns: TableColumnsType<any> = [
     {
       title: "Model",
-      dataIndex: "model",
+      dataIndex: "model_name",
       key: "model",
     },
     {
       title: "Make",
-      dataIndex: "make",
+      dataIndex: "make_name",
       key: "make",
     },
     {

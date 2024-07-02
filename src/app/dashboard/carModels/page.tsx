@@ -30,7 +30,7 @@ function CarModelsPage() {
     },
     {
       title: "Maker Name",
-      dataIndex: "make",
+      dataIndex: "make_name",
       key: "make",
     },
     // {

@@ -76,6 +76,11 @@ function HotelServicesPage() {
       key: "day_price",
     },
     {
+      title: "Points",
+      dataIndex: "points",
+      key: "points",
+    },
+    {
       title: "Images",
       width: "185px",
       key: "images",
@@ -626,14 +631,28 @@ function HotelServicesPage() {
                 />
               </Form.Item>
             </div>
-            <Form.Item
-              label="Day Price"
-              name="day_price"
-              rules={[{ required: true }]}
-              className="w-full"
-            >
-              <InputNumber min={1} className="w-full" placeholder="Day Price" />
-            </Form.Item>
+            <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row gap-2 justify-between">
+              <Form.Item
+                label="Day Price"
+                name="day_price"
+                rules={[{ required: true }]}
+                className="w-full"
+              >
+                <InputNumber
+                  min={1}
+                  className="w-full"
+                  placeholder="Day Price"
+                />
+              </Form.Item>
+              <Form.Item
+                label="Points"
+                name="points"
+                rules={[{ required: true }]}
+                className="w-full"
+              >
+                <InputNumber min={0} className="w-full" placeholder="Price" />
+              </Form.Item>
+            </div>
 
             <SubmitButton
               form={AddEditHotelServiceForm}

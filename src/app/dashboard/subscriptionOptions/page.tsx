@@ -43,6 +43,11 @@ function SubscriptionOptionsPage() {
       key: "price",
     },
     {
+      title: "Points",
+      dataIndex: "points",
+      key: "points",
+    },
+    {
       title: "Edit",
       key: "edit",
       render: (record: any) => (
@@ -160,7 +165,7 @@ function SubscriptionOptionsPage() {
         let list: any = [];
         res.data.results.map((rec: any) => {
           list.push({
-            label: rec.model,
+            label: rec.model_name,
             value: rec.id,
             key: rec.id,
           });
@@ -353,6 +358,14 @@ function SubscriptionOptionsPage() {
                 className="w-full"
               >
                 <InputNumber min={1} className="w-full" placeholder="Price" />
+              </Form.Item>
+              <Form.Item
+                label="Points"
+                name="points"
+                rules={[{ required: true }]}
+                className="w-full"
+              >
+                <InputNumber min={0} className="w-full" placeholder="Price" />
               </Form.Item>
             </div>
             <SubmitButton

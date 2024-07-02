@@ -86,14 +86,20 @@ function CarReservations() {
             value={record?.status}
             onChange={(value) => editReservationStatus(value, record.id)}
           >
-            <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
-              Confirmed
-            </Select.Option>
             <Select.Option
               key="WAITING_FOR_PAYMENT"
               value={"WAITING_FOR_PAYMENT"}
             >
               Waiting For Payment
+            </Select.Option>
+            <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
+              Confirmed
+            </Select.Option>
+            <Select.Option key="COMPLETED" value={"COMPLETED"}>
+              Completed
+            </Select.Option>
+            <Select.Option key="CANCELLED" value={"CANCELLED"}>
+              Cancelled
             </Select.Option>
           </Select>
         </>
@@ -322,7 +328,7 @@ function CarReservations() {
         let list: any = [];
         res.data.results.map((rec: any) => {
           list.push({
-            label: rec.model,
+            label: rec.model_name,
             value: rec.id,
             key: rec.id,
           });
@@ -526,6 +532,7 @@ function CarReservations() {
           layout="vertical"
           name="carReservationForm"
           onFinish={addEditCarReservations}
+          initialValues={{ options: [{}] }}
         >
           <Form.Item name="user" label="Client" rules={[{ required: true }]}>
             <Select
@@ -789,7 +796,7 @@ function CarReservations() {
               <InputNumber className="w-full" />
             </Form.Item>
           </div>
-          <Form.Item
+          {/* <Form.Item
             className="w-full"
             name="status"
             label="Status:"
@@ -803,7 +810,7 @@ function CarReservations() {
                 WAITING FOR PAYMENT
               </Select.Option>
             </Select>
-          </Form.Item>
+          </Form.Item> */}
           <SubmitButton
             form={addCarReservationForm}
             loading={postEditRequestLoading}

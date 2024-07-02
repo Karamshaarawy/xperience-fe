@@ -70,36 +70,42 @@ function ReservationsPage() {
             value={record?.status}
             onChange={(value) => editReservationStatus(value, record.id)}
           >
-            <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
-              Confirmed
-            </Select.Option>
             <Select.Option
               key="WAITING_FOR_PAYMENT"
               value={"WAITING_FOR_PAYMENT"}
             >
               Waiting For Payment
             </Select.Option>
+            <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
+              Confirmed
+            </Select.Option>
+            <Select.Option key="COMPLETED" value={"COMPLETED"}>
+              Completed
+            </Select.Option>
+            <Select.Option key="CANCELLED" value={"CANCELLED"}>
+              Cancelled
+            </Select.Option>
           </Select>
         </>
       ),
     },
-    {
-      title: "Edit",
-      key: "edit",
-      render: (record: any) => (
-        <Button
-          style={{
-            backgroundColor: "#363B5E",
-            borderColor: "#F1DF78",
-          }}
-          className=" text-white"
-          id={record.id}
-          onClick={() => openAddEditModel(record)}
-        >
-          Edit
-        </Button>
-      ),
-    },
+    // {
+    //   title: "Edit",
+    //   key: "edit",
+    //   render: (record: any) => (
+    //     <Button
+    //       style={{
+    //         backgroundColor: "#363B5E",
+    //         borderColor: "#F1DF78",
+    //       }}
+    //       className=" text-white"
+    //       id={record.id}
+    //       onClick={() => openAddEditModel(record)}
+    //     >
+    //       Edit
+    //     </Button>
+    //   ),
+    // },
   ];
 
   function editReservationStatus(value: any, id: any) {
@@ -415,6 +421,7 @@ function ReservationsPage() {
             layout="vertical"
             name="hotelReservationForm"
             onFinish={addHotelReservation}
+            initialValues={{ options: [{}] }}
           >
             <Form.Item name="user" label="Client" rules={[{ required: true }]}>
               <Select
@@ -577,7 +584,7 @@ function ReservationsPage() {
                 <InputNumber className="w-full" />
               </Form.Item>
             </div>
-            <Form.Item
+            {/* <Form.Item
               className="w-full"
               name="status"
               label="Status:"
@@ -591,7 +598,7 @@ function ReservationsPage() {
                   WAITING FOR PAYMENT
                 </Select.Option>
               </Select>
-            </Form.Item>
+            </Form.Item> */}
 
             <SubmitButton
               form={addHotelReservationForm}
