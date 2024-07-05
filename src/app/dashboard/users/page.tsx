@@ -48,23 +48,23 @@ function UsersPage() {
       key: "rule",
       render: (is_staff: boolean) => (is_staff ? "Admin" : "User"),
     },
-    {
-      title: "Edit",
-      key: "edit",
-      render: (record: any) => (
-        <Button
-          style={{
-            backgroundColor: "#363B5E",
-            borderColor: "#F1DF78",
-          }}
-          className=" text-white"
-          id={record.id}
-          onClick={() => openAddEditModel(record)}
-        >
-          Edit
-        </Button>
-      ),
-    },
+    // {
+    //   title: "Edit",
+    //   key: "edit",
+    //   render: (record: any) => (
+    //     <Button
+    //       style={{
+    //         backgroundColor: "#363B5E",
+    //         borderColor: "#F1DF78",
+    //       }}
+    //       className=" text-white"
+    //       id={record.id}
+    //       onClick={() => openAddEditModel(record)}
+    //     >
+    //       Edit
+    //     </Button>
+    //   ),
+    // },
     // {
     //   title: "Delete",
     //   key: "delete",

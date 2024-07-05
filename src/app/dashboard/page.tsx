@@ -5,7 +5,17 @@ import isAuth from "../../../components/isAuth";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { GetReq } from "../api/api";
 import { StatusSuccessCodes } from "../api/successStatus";
-import { Card, Col, Row, Select, Statistic, message } from "antd";
+import {
+  Button,
+  Card,
+  Col,
+  DatePicker,
+  Form,
+  Row,
+  Select,
+  Statistic,
+  message,
+} from "antd";
 import { Bar, Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -25,11 +35,15 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+interface Parameters {
+  status?: any;
+  start_date?: any;
+  end_date?: any;
+  key?: any;
+}
+const { RangePicker } = DatePicker;
 function Dashboard() {
-  const searchParams = useSearchParams();
-  const params = new URLSearchParams(searchParams);
-  const { replace } = useRouter();
-  const pathname = usePathname();
   const [loadStatistics, setLoadStatistics] = useState<boolean>(false);
   const [statisticsData, setStatisticsData] = useState<any>();
   const [statisticsPendingData, setStatisticsPendingData] = useState<any>();
@@ -39,10 +53,12 @@ function Dashboard() {
   const [messageApi, contextHolder] = message.useMessage();
   const [loadUsersList, setLoadUsersList] = useState<any>(false);
   const [usersCount, setUsersCount] = useState<number>(0);
+  const [searchForm] = Form.useForm();
   const [reservationsCount, setReservationsCount] = useState({
     labels: [],
     total_amount: [],
   });
+  const [parameters, setParameters] = useState<Parameters>({});
   const [reservationsTotals, setReservationsTotals] = useState({
     labels: [],
     totals: [],
@@ -63,15 +79,14 @@ function Dashboard() {
   useEffect(() => {
     if (!isEffectRefreshRef.current) {
       getStatistics();
-      getStatisticsStatus("WAITING_FOR_PAYMENT");
+      getStatisticsStatus();
       getUsersList();
       isEffectRefreshRef.current = true;
     }
-  }, []);
+  }, [parameters]);
 
   function getStatistics() {
     let url = `filter-reservations/?limit=999999`;
-    params.forEach((value: any, key: any) => (url += `&${key}=${value}`));
     setLoadStatistics(true);
     GetReq(url).then((res) => {
       setLoadStatistics(false);
@@ -87,9 +102,14 @@ function Dashboard() {
       }
     });
   }
-  function getStatisticsStatus(status: string) {
-    let url = `filter-reservations/?limit=999999&status=${status}`;
-    params.forEach((value: any, key: any) => (url += `&${key}=${value}`));
+  function getStatisticsStatus() {
+    let url = `filter-reservations/?limit=999999`;
+    console.log(parameters);
+    for (let key in parameters) {
+      console.log(key);
+
+      url += `&${key}=${parameters[key as keyof typeof parameters]}`;
+    }
     setLoadStatistics(true);
     GetReq(url).then((res) => {
       setLoadStatistics(false);
@@ -190,10 +210,34 @@ function Dashboard() {
     padding: "8px 0",
   };
 
+  function applySearch(values: any) {
+    let params: any = {};
+    if (values?.date) {
+      params["start_date"] = values?.date[0].format("YYYY-MM-DD");
+      params["end_date"] = values?.date[1].format("YYYY-MM-DD");
+      setParameters((prev: any) => {
+        return { ...prev, ...params };
+      });
+    }
+    if (values?.status) {
+      params["status"] = values?.status;
+      setParameters((prev: any) => {
+        return { ...prev, ...params };
+      });
+    }
+    isEffectRefreshRef.current = false;
+  }
+
+  const onSearchReset = () => {
+    searchForm.resetFields();
+    setParameters({});
+    isEffectRefreshRef.current = false;
+  };
+
   return (
     <div>
       {contextHolder}
-      <Card className="p-2 border rounded-lg bg-transparent">
+      <Card className=" border rounded-lg bg-transparent">
         <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row  justify-center items-center content-center pb-5">
           <Statistic
             title="No of Users"
@@ -247,27 +291,54 @@ function Dashboard() {
       <Card className="p-5 border rounded-lg">
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
           <Col className="gutter-row" xs={24} sm={24} md={16} lg={16} xl={16}>
-            <Select
-              // className="w-full"
-              defaultValue={"WAITING_FOR_PAYMENT"}
-              onSelect={(value) => getStatisticsStatus(value)}
+            <Form
+              form={searchForm}
+              onFinish={applySearch}
+              layout="inline"
+              // className={
+              //   "gap-3 mb-5 items-baseline flex " +
+              //   (isMobile ? " flex-col" : "flex-row")
+              // }
             >
-              <Select.Option
-                key="WAITING_FOR_PAYMENT"
-                value={"WAITING_FOR_PAYMENT"}
+              <Form.Item name="status">
+                <Select
+                  placeholder="Select Status"
+                  className="w-fit"
+                  // defaultValue={"WAITING_FOR_PAYMENT"}
+                  // onSelect={(value) => getStatisticsStatus(value)}
+                >
+                  <Select.Option
+                    key="WAITING_FOR_PAYMENT"
+                    value={"WAITING_FOR_PAYMENT"}
+                  >
+                    Waiting For Payment
+                  </Select.Option>
+                  <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
+                    Confirmed
+                  </Select.Option>
+                  <Select.Option key="COMPLETED" value={"COMPLETED"}>
+                    Completed
+                  </Select.Option>
+                  <Select.Option key="CANCELLED" value={"CANCELLED"}>
+                    Cancelled
+                  </Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item name="date">
+                <RangePicker />
+              </Form.Item>
+              <Button
+                htmlType="submit"
+                style={{
+                  backgroundColor: "#363B5E",
+                  borderColor: "#F1DF78",
+                }}
+                className=" text-white mx-2"
               >
-                Waiting For Payment
-              </Select.Option>
-              <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
-                Confirmed
-              </Select.Option>
-              <Select.Option key="COMPLETED" value={"COMPLETED"}>
-                Completed
-              </Select.Option>
-              <Select.Option key="CANCELLED" value={"CANCELLED"}>
-                Cancelled
-              </Select.Option>
-            </Select>
+                Apply
+              </Button>
+              <Button onClick={onSearchReset}>Reset</Button>
+            </Form>
             <Bar options={options} data={data} />
           </Col>
           <Col className="gutter-row" xs={24} sm={24} md={8} lg={8} xl={8}>
@@ -275,13 +346,14 @@ function Dashboard() {
           </Col>
         </Row>
       </Card>
-      <Card className="p-5 border rounded-lg">
+      {/* <Card className="p-5 border rounded-lg">
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
           <Col className="gutter-row" xs={24} sm={24} md={16} lg={16} xl={16}>
             <Select
               // className="w-full"
               defaultValue={"WAITING_FOR_PAYMENT"}
               onSelect={(value) => getStatisticsStatus(value)}
+              rules
             >
               <Select.Option
                 key="WAITING_FOR_PAYMENT"
@@ -305,7 +377,7 @@ function Dashboard() {
             <Doughnut data={doughnutData} options={{ cutout: "80%" }} />{" "}
           </Col>
         </Row>
-      </Card>
+      </Card> */}
     </div>
   );
 }
