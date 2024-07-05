@@ -76,6 +76,11 @@ function CarReservations() {
       render: (record: any) => record?.car_reservations[0]?.final_price,
     },
     {
+      title: "Created By",
+      dataIndex: ["created_by", "name"],
+      key: "created_by",
+    },
+    {
       title: "Status",
       // dataIndex: "status",
       key: "status",
@@ -105,11 +110,7 @@ function CarReservations() {
         </>
       ),
     },
-    {
-      title: "Created By",
-      dataIndex: ["created_by", "name"],
-      key: "created_by",
-    },
+
     // {
     //   title: "Edit",
     //   key: "edit",
@@ -504,7 +505,9 @@ function CarReservations() {
       {contextHolder}
       <div className="w-full h-fit bg-[#363B5E] py-8 px-5 flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row justify-between items-center content-center">
         <div className="flex flex-row flex-wrap gap-5 w-fit ">
-          <h2 className="text-xl text-[white] font-semibold">Reservations</h2>
+          <h2 className="text-xl text-[white] font-semibold">
+            Car Reservations
+          </h2>
         </div>
         <Button
           style={{

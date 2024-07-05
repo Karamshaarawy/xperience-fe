@@ -53,6 +53,11 @@ function ReservationsPage() {
       key: "CheckOut",
       render: (record: any) => record?.hotel_reservations[0]?.check_out_date,
     },
+    {
+      title: "Price",
+      key: "price",
+      render: (record: any) => record?.hotel_reservations[0]?.final_price,
+    },
 
     {
       title: "Created By",
@@ -393,7 +398,9 @@ function ReservationsPage() {
       {contextHolder}
       <div className="w-full h-fit bg-[#363B5E] py-8 px-5 flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row justify-between items-center content-center">
         <div className="flex flex-row flex-wrap gap-5 w-fit ">
-          <h2 className="text-xl text-[white] font-semibold">Reservations</h2>
+          <h2 className="text-xl text-[white] font-semibold">
+            Hotel Reservations
+          </h2>
         </div>
         <Button
           style={{
