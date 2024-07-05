@@ -24,6 +24,7 @@ import {
   AiOutlineLogout,
   AiOutlineMenuFold,
   AiOutlineMenuUnfold,
+  AiOutlineTransaction,
 } from "react-icons/ai";
 import { IoCarSportOutline } from "react-icons/io5";
 import { MdCircleNotifications, MdNotifications } from "react-icons/md";
@@ -456,6 +457,23 @@ export default function DashboardLayout({
                           color="white"
                         />
                         Service Options
+                      </Space>
+                    </span>
+                  </Link>
+                ),
+              },
+              {
+                key: `/dashboard/transactions`,
+                label: (
+                  <Link href={`/dashboard/transactions`}>
+                    <span className="text-white">
+                      <Space>
+                        <AiOutlineTransaction
+                          size={collapsed ? 25 : 20}
+                          style={{ marginInlineEnd: "10px" }}
+                          color="white"
+                        />
+                        Transactions
                       </Space>
                     </span>
                   </Link>

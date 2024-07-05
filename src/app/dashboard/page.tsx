@@ -1,30 +1,31 @@
 "use client";
-
-import { useEffect, useRef, useState } from "react";
-import isAuth from "../../../components/isAuth";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { GetReq } from "../api/api";
-import { StatusSuccessCodes } from "../api/successStatus";
 import {
   Button,
   Card,
   Col,
   DatePicker,
   Form,
+  message,
   Row,
   Select,
   Statistic,
-  message,
 } from "antd";
-import { Bar, Doughnut } from "react-chartjs-2";
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
+  ArcElement,
   BarElement,
+  CategoryScale,
+  Chart as ChartJS,
+  Legend,
+  LinearScale,
   Title,
+  Tooltip,
 } from "chart.js";
-import { Tooltip, Legend, ArcElement } from "chart.js";
+import { useEffect, useRef, useState } from "react";
+import { Bar, Doughnut } from "react-chartjs-2";
+
+import isAuth from "../../../components/isAuth";
+import { GetReq } from "../api/api";
+import { StatusSuccessCodes } from "../api/successStatus";
 
 ChartJS.register(
   ArcElement,
@@ -38,8 +39,8 @@ ChartJS.register(
 
 interface Parameters {
   status?: any;
-  start_date?: any;
-  end_date?: any;
+  created_at_after?: any;
+  created_at_before?: any;
   key?: any;
 }
 const { RangePicker } = DatePicker;
@@ -213,8 +214,8 @@ function Dashboard() {
   function applySearch(values: any) {
     let params: any = {};
     if (values?.date) {
-      params["start_date"] = values?.date[0].format("YYYY-MM-DD");
-      params["end_date"] = values?.date[1].format("YYYY-MM-DD");
+      params["created_at_after"] = values?.date[0].format("YYYY-MM-DD");
+      params["created_at_before"] = values?.date[1].format("YYYY-MM-DD");
       setParameters((prev: any) => {
         return { ...prev, ...params };
       });
