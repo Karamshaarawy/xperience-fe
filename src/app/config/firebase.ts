@@ -23,10 +23,9 @@ const firebaseCloudMessaging = {
       try {
         const messaging = getMessaging();
         const tokenInLocalForage = await this.tokenInlocalforage();
-        if (tokenInLocalForage !== null) {
-          return tokenInLocalForage;
-        }
+
         const status = await Notification.requestPermission();
+        console.log(status);
         if (status && status === "granted") {
           const fcm_token = await getToken(messaging, {
             vapidKey:
@@ -53,6 +52,7 @@ const firebaseCloudMessaging = {
           }
         }
       } catch (error) {
+        console.log(error);
         return null;
       }
     } else {
@@ -89,6 +89,7 @@ const firebaseCloudMessaging = {
           }
         }
       } catch (error) {
+        console.log(error);
         return null;
       }
     }

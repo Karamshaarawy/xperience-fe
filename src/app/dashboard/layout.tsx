@@ -1,6 +1,4 @@
 "use client";
-import { initializeApp } from "firebase/app";
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
 
 import {
   Avatar,
@@ -70,7 +68,7 @@ export default function DashboardLayout({
       navigator.serviceWorker
         .register("/firebase-messaging-sw.js")
         .then((registration) =>
-          console.log("service worker registered Successfully")
+          console.log("service worker registered Successfully", registration)
         )
         .catch((error) => {
           console.log("service worker registration Failed");
@@ -87,8 +85,8 @@ export default function DashboardLayout({
     }
 
     setToken();
+    getListNotifications();
   }, [messages]);
-  //   const { setLoginData, user }: any = useContext(LoginDataContext);
   const router = useRouter();
   const pathname = usePathname();
   const [prefix_pathname, setPrefix_pathname] = useState<string>("");
@@ -119,7 +117,6 @@ export default function DashboardLayout({
         isEffectCalledRef.current = true;
       }
     }
-    getListNotifications();
   }, [router, currentUser.id]);
 
   function getListNotifications() {
@@ -609,7 +606,6 @@ export default function DashboardLayout({
           >
             <Suspense>
               <ToastContainer />
-              {}
               {children}
             </Suspense>
           </Content>
