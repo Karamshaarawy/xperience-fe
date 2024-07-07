@@ -28,6 +28,7 @@ import { Bar, Doughnut } from "react-chartjs-2";
 import isAuth from "../../../components/isAuth";
 import { GetReq } from "../api/api";
 import { StatusSuccessCodes } from "../api/successStatus";
+import { GoDotFill } from "react-icons/go";
 
 ChartJS.register(
   ArcElement,
@@ -56,6 +57,7 @@ function Dashboard() {
   const [messageApi, contextHolder] = message.useMessage();
   const [loadUsersList, setLoadUsersList] = useState<any>(false);
   const [usersCount, setUsersCount] = useState<number>(0);
+  const [totalRevenue, setTotalRevenue] = useState<number>(0);
   const [searchForm] = Form.useForm();
   const [reservationsCount, setReservationsCount] = useState({
     labels: [],
@@ -69,14 +71,33 @@ function Dashboard() {
   const isEffectRefreshRef = useRef(false);
   const options = {
     maintainAspectRatio: false,
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+      },
+      y: {
+        min: 0,
+
+        ticks: {
+          stepSize: 5,
+        },
+        beginAtZero: true,
+      },
+    },
+    elements: {
+      line: {
+        tension: 0.1,
+      },
+    },
     plugins: {
-      legend: {
-        position: "top" as const,
+      filler: {
+        propagate: false,
       },
-      title: {
-        display: true,
-        text: "Total Reservations Count",
-      },
+    },
+    interaction: {
+      intersect: true,
     },
   };
   useEffect(() => {
@@ -95,6 +116,10 @@ function Dashboard() {
       setLoadStatistics(false);
       if (StatusSuccessCodes.includes(res.status)) {
         setStatisticsData(res.data);
+        setTotalRevenue(
+          +res?.data?.total_final_price_car +
+            +res?.data?.total_final_price_hotel
+        );
         // getStatisticscompleted();
       } else {
         res?.errors.forEach((err: any) => {
@@ -172,8 +197,8 @@ function Dashboard() {
       {
         label: "Total Reservations Revenue",
         data: reservationsTotals.totals,
-        backgroundColor: ["#1BD7B7", "#FF5D6B", "#E9ECF1"],
-        borderColor: ["#1BD7B7", "#FF5D6B", "#E9ECF1"],
+        backgroundColor: ["#1BD7B7", "#FF5D6B"],
+        borderColor: ["#1BD7B7", "#FF5D6B"],
         borderWidth: 1,
       },
     ],
@@ -236,6 +261,26 @@ function Dashboard() {
     setParameters({});
     isEffectRefreshRef.current = false;
   };
+  // const doughnutPlugin = {
+  //   id: "myCustomPlugin",
+  //   afterDatasetsDraw: function (chart: any) {
+  //     const ctx = chart.ctx;
+  //     const canvas = chart.canvas;
+  //     const width = chart.width;
+  //     const height = chart.height;
+
+  //     ctx.restore();
+  //     const fontSize = (height / 114).toFixed(2);
+  //     ctx.font = `${fontSize}em Arial`;
+  //     ctx.textBaseline = "middle";
+  //     const text = totalRevenue.toString();
+  //     const textX = Math.round((width - ctx.measureText(text).width) / 2);
+  //     const textY = height / 2;
+
+  //     ctx.fillText(text, textX, textY);
+  //     ctx.save();
+  //   },
+  // };
 
   return (
     <div>
@@ -339,11 +384,29 @@ function Dashboard() {
             </Form>
           </div>
           <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row  ">
-            <div className="w-full">
+            <div className="w-full h-[350px] ">
               <Bar options={options} data={data} />
             </div>
-            <div>
-              <Doughnut data={doughnutData} options={{ cutout: "80%" }} />{" "}
+            <div style={{ width: "200px" }}>
+              <Doughnut
+                data={doughnutData}
+                options={{ cutout: "80%" }}
+                // plugins={[doughnutPlugin]}
+              />
+              <h4 className="flex flex-row gap-2">
+                <GoDotFill size={30} />
+                {totalRevenue} {"Total Revenue"}
+              </h4>
+              <h4 className="flex flex-row gap-2">
+                <GoDotFill size={30} color={"#1BD7B7"} />
+                {statisticsData?.total_final_price_car}{" "}
+                {"Car Reservations Revenue"}
+              </h4>
+              <h4 className="flex flex-row gap-2">
+                <GoDotFill size={30} color={"#FF5D6B"} />
+                {statisticsData?.total_final_price_hotel}{" "}
+                {"Hotel Reservations Revenue"}
+              </h4>
             </div>
           </div>
         </div>
