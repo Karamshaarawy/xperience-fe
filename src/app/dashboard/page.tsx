@@ -20,6 +20,8 @@ import {
   Title,
   Tooltip,
 } from "chart.js";
+import { isMobile } from "react-device-detect";
+
 import { useEffect, useRef, useState } from "react";
 import { Bar, Doughnut } from "react-chartjs-2";
 
@@ -290,95 +292,54 @@ function Dashboard() {
         </div>
       </Card>
       <Card className="p-5 border rounded-lg overflow-auto">
-        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-          <Col className="gutter-row" xs={24} sm={24} md={16} lg={16} xl={16}>
-            <Form
-              form={searchForm}
-              onFinish={applySearch}
-              layout="inline"
-              // className={
-              //   "gap-3 mb-5 items-baseline flex " +
-              //   (isMobile ? " flex-col" : "flex-row")
-              // }
-            >
-              <Form.Item name="status">
-                <Select
-                  placeholder="Select Status"
-                  className="w-fit"
-                  // defaultValue={"WAITING_FOR_PAYMENT"}
-                  // onSelect={(value) => getStatisticsStatus(value)}
+        <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row  justify-center items-center content-center pb-5">
+          <Form
+            form={searchForm}
+            onFinish={applySearch}
+            layout="inline"
+            className={
+              "gap-3 mb-5 items-baseline flex " +
+              (isMobile ? " flex-col" : "flex-row")
+            }
+          >
+            <Form.Item name="status">
+              <Select placeholder="Select Status" className="w-fit">
+                <Select.Option
+                  key="WAITING_FOR_PAYMENT"
+                  value={"WAITING_FOR_PAYMENT"}
                 >
-                  <Select.Option
-                    key="WAITING_FOR_PAYMENT"
-                    value={"WAITING_FOR_PAYMENT"}
-                  >
-                    Waiting For Payment
-                  </Select.Option>
-                  <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
-                    Confirmed
-                  </Select.Option>
-                  <Select.Option key="COMPLETED" value={"COMPLETED"}>
-                    Completed
-                  </Select.Option>
-                  <Select.Option key="CANCELLED" value={"CANCELLED"}>
-                    Cancelled
-                  </Select.Option>
-                </Select>
-              </Form.Item>
-              <Form.Item name="date">
-                <RangePicker />
-              </Form.Item>
-              <Button
-                htmlType="submit"
-                style={{
-                  backgroundColor: "#363B5E",
-                  borderColor: "#F1DF78",
-                }}
-                className=" text-white mx-2"
-              >
-                Apply
-              </Button>
-              <Button onClick={onSearchReset}>Reset</Button>
-            </Form>
-            <Bar options={options} data={data} />
-          </Col>
-          <Col className="gutter-row" xs={24} sm={24} md={8} lg={8} xl={8}>
-            <Doughnut data={doughnutData} options={{ cutout: "80%" }} />{" "}
-          </Col>
-        </Row>
-      </Card>
-      {/* <Card className="p-5 border rounded-lg">
-        <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-          <Col className="gutter-row" xs={24} sm={24} md={16} lg={16} xl={16}>
-            <Select
-              // className="w-full"
-              defaultValue={"WAITING_FOR_PAYMENT"}
-              onSelect={(value) => getStatisticsStatus(value)}
-              rules
+                  Waiting For Payment
+                </Select.Option>
+                <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
+                  Confirmed
+                </Select.Option>
+                <Select.Option key="COMPLETED" value={"COMPLETED"}>
+                  Completed
+                </Select.Option>
+                <Select.Option key="CANCELLED" value={"CANCELLED"}>
+                  Cancelled
+                </Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item name="date">
+              <RangePicker />
+            </Form.Item>
+            <Button
+              htmlType="submit"
+              style={{
+                backgroundColor: "#363B5E",
+                borderColor: "#F1DF78",
+              }}
+              className=" text-white mx-2"
             >
-              <Select.Option
-                key="WAITING_FOR_PAYMENT"
-                value={"WAITING_FOR_PAYMENT"}
-              >
-                Waiting For Payment
-              </Select.Option>
-              <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
-                Confirmed
-              </Select.Option>
-              <Select.Option key="COMPLETED" value={"COMPLETED"}>
-                Completed
-              </Select.Option>
-              <Select.Option key="CANCELLED" value={"CANCELLED"}>
-                Cancelled
-              </Select.Option>
-            </Select>
-            <Bar options={options} data={data} />
-          </Col>
-          <Col className="gutter-row" xs={24} sm={24} md={8} lg={8} xl={8}>
-            <Doughnut data={doughnutData} options={{ cutout: "80%" }} />{" "}
-          </Col>
-        </Row>
-      </Card> */}
+              Apply
+            </Button>
+            <Button onClick={onSearchReset}>Reset</Button>
+          </Form>
+          <Bar options={options} data={data} />
+          <Doughnut data={doughnutData} options={{ cutout: "80%" }} />{" "}
+        </div>
+      </Card>
     </div>
   );
 }
