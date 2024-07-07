@@ -124,7 +124,7 @@ export default function DashboardLayout({
 
   function getListNotifications() {
     let numberNotif = 0;
-    GetReq("notifications/?limit=10000&offset=0").then((res) => {
+    GetReq("admin-notifications/?limit=10000&offset=0").then((res) => {
       if (StatusSuccessCodes.includes(res?.status)) {
         setNotifications(
           res?.data?.results?.map((item: any) => {
