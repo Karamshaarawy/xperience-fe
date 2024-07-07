@@ -68,7 +68,7 @@ function Dashboard() {
   });
   const isEffectRefreshRef = useRef(false);
   const options = {
-    responsive: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: "top" as const,
@@ -292,52 +292,69 @@ function Dashboard() {
         </div>
       </Card>
       <Card className="p-5 border rounded-lg overflow-auto">
-        <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row  justify-center items-center content-center pb-5">
-          <Form
-            form={searchForm}
-            onFinish={applySearch}
-            layout="inline"
-            className={
-              "gap-3 mb-5 items-baseline flex " +
-              (isMobile ? " flex-col" : "flex-row")
-            }
-          >
-            <Form.Item name="status">
-              <Select placeholder="Select Status" className="w-fit">
-                <Select.Option
-                  key="WAITING_FOR_PAYMENT"
-                  value={"WAITING_FOR_PAYMENT"}
-                >
-                  Waiting For Payment
-                </Select.Option>
-                <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
-                  Confirmed
-                </Select.Option>
-                <Select.Option key="COMPLETED" value={"COMPLETED"}>
-                  Completed
-                </Select.Option>
-                <Select.Option key="CANCELLED" value={"CANCELLED"}>
-                  Cancelled
-                </Select.Option>
-              </Select>
-            </Form.Item>
-            <Form.Item name="date">
-              <RangePicker />
-            </Form.Item>
-            <Button
-              htmlType="submit"
-              style={{
-                backgroundColor: "#363B5E",
-                borderColor: "#F1DF78",
-              }}
-              className=" text-white mx-2"
+        <div>
+          <div>
+            <Form
+              form={searchForm}
+              onFinish={applySearch}
+              layout="inline"
+              className={
+                "gap-3 mb-5 items-baseline flex " +
+                (isMobile ? " flex-col" : "flex-row")
+              }
             >
-              Apply
-            </Button>
-            <Button onClick={onSearchReset}>Reset</Button>
-          </Form>
-          <Bar options={options} data={data} />
-          <Doughnut data={doughnutData} options={{ cutout: "80%" }} />{" "}
+              <Form.Item name="status">
+                <Select placeholder="Select Status" className="w-fit">
+                  <Select.Option
+                    key="WAITING_FOR_PAYMENT"
+                    value={"WAITING_FOR_PAYMENT"}
+                  >
+                    Waiting For Payment
+                  </Select.Option>
+                  <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
+                    Confirmed
+                  </Select.Option>
+                  <Select.Option key="COMPLETED" value={"COMPLETED"}>
+                    Completed
+                  </Select.Option>
+                  <Select.Option key="CANCELLED" value={"CANCELLED"}>
+                    Cancelled
+                  </Select.Option>
+                </Select>
+              </Form.Item>
+              <Form.Item name="date">
+                <RangePicker />
+              </Form.Item>
+              <Button
+                htmlType="submit"
+                style={{
+                  backgroundColor: "#363B5E",
+                  borderColor: "#F1DF78",
+                }}
+                className=" text-white mx-2"
+              >
+                Apply
+              </Button>
+              <Button onClick={onSearchReset}>Reset</Button>
+            </Form>
+          </div>
+          <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row  ">
+            <div>
+              <Bar
+                style={{
+                  boxSizing: "border-box",
+                  display: "block",
+                  minHeight: "241px",
+                }}
+                className="min-h-10"
+                options={options}
+                data={data}
+              />
+            </div>
+            <div>
+              <Doughnut data={doughnutData} options={{ cutout: "80%" }} />{" "}
+            </div>
+          </div>
         </div>
       </Card>
     </div>
