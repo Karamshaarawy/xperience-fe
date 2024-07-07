@@ -181,8 +181,8 @@ function Dashboard() {
   function mapReports2(statistics: any) {
     // if (statistics != null) {
     let labels: any = [
-      "Total Car Reservations Revenue",
-      "Total Hotel Reservations Revenue",
+      "Car Reservations Revenue",
+      "Hotel Reservations Revenue",
     ];
 
     let totals: any = [
@@ -339,17 +339,8 @@ function Dashboard() {
             </Form>
           </div>
           <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row  ">
-            <div>
-              <Bar
-                style={{
-                  boxSizing: "border-box",
-                  display: "block",
-                  minHeight: "241px",
-                }}
-                className="min-h-10"
-                options={options}
-                data={data}
-              />
+            <div className="w-full">
+              <Bar options={options} data={data} />
             </div>
             <div>
               <Doughnut data={doughnutData} options={{ cutout: "80%" }} />{" "}
