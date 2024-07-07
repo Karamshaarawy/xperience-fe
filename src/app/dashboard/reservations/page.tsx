@@ -223,7 +223,6 @@ function ReservationsPage() {
 
   function addEditReservation(values: any) {
     // const data = new FormData();
-    console.log(values);
     // for (const key in values) {
     //   if (key === "image" && typeof values[key] === "string") {
     //     continue;
@@ -695,7 +694,6 @@ function ReservationsPage() {
                   <Form.Item label="  ">
                     <Button
                       onClick={() => {
-                        console.log(addCarReservationForm.getFieldsValue());
                         addCarReservationForm.setFieldValue("final_price", 5);
                         addCarReservationForm.validateFields();
                       }}
@@ -748,7 +746,7 @@ function ReservationsPage() {
                     options={hotelServicesDropDown}
                     allowClear={true}
                     onClear={() => hotelServicesSearch()}
-                    onChange={(e) => console.log(e)}
+                    onChange={(e) => null}
                   />
                 </Form.Item>
                 <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row gap-2 ">
@@ -834,7 +832,6 @@ function ReservationsPage() {
                   <Form.Item label="  ">
                     <Button
                       onClick={() => {
-                        console.log(addCarReservationForm.getFieldsValue());
                         addHotelReservationForm.setFieldValue("final_price", 5);
                         addHotelReservationForm.validateFields();
                       }}

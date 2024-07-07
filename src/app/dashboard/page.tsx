@@ -132,10 +132,7 @@ function Dashboard() {
   }
   function getStatisticsStatus() {
     let url = `filter-reservations/?limit=999999`;
-    console.log(parameters);
     for (let key in parameters) {
-      console.log(key);
-
       url += `&${key}=${parameters[key as keyof typeof parameters]}`;
     }
     setLoadStatistics(true);

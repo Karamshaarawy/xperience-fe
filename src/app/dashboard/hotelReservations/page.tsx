@@ -233,7 +233,6 @@ function ReservationsPage() {
 
   function addHotelReservation(values: any) {
     calculateFinalPrice();
-    console.log(values);
 
     delete values.additional_fees;
     values.check_in_date = values.check_in_date.format("YYYY-MM-DD");
@@ -249,7 +248,6 @@ function ReservationsPage() {
     delete values.user;
     delete values.status;
     data.hotel_reservations = [values];
-    console.log(data);
 
     setPostEditRequestLoading(true);
     isEdit

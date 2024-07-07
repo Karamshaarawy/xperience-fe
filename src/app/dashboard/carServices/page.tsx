@@ -495,7 +495,6 @@ function CarServicesPage() {
 
   const carImagesFile = (e: any) => {
     setCarsFileList(e.fileList);
-    console.log(e);
     return e?.file?.originFileObj;
   };
 

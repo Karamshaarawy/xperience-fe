@@ -478,7 +478,6 @@ function CarReservations() {
       : null;
     subOptPrice ? (finalPrice += +subOptPrice) : null;
     AdditionalFees ? (finalPrice += +AdditionalFees) : null;
-    console.log(finalPrice);
     addCarReservationForm.setFieldValue("final_price", finalPrice);
     addCarReservationForm.validateFields();
   }

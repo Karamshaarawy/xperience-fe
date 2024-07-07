@@ -32,7 +32,6 @@ const firebaseCloudMessaging = {
             vapidKey:
               "BEH0OMvStZlMB91AoHer9AGH02amwbydsDMh-Dvs98_bGTu5_Dh8AjwyQR5fUboWdWe7nAAQHaMmXLr4DivpK4c",
           });
-          console.log(fcm_token);
           if (fcm_token) {
             PostReq("devices", {
               registration_id: `${fcm_token}`,
@@ -54,7 +53,6 @@ const firebaseCloudMessaging = {
           }
         }
       } catch (error) {
-        console.log(error);
         return null;
       }
     } else {
@@ -91,7 +89,6 @@ const firebaseCloudMessaging = {
           }
         }
       } catch (error) {
-        console.log(error);
         return null;
       }
     }
