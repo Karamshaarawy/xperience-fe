@@ -243,7 +243,7 @@ function Dashboard() {
           <Statistic
             title="No of Users"
             value={usersCount}
-            className="shadow-md bg-white border rounded-lg flex flex-col items-center align-middle justify-center w-fit p-2 mx-5"
+            className="shadow-md bg-white border rounded-lg flex flex-col items-center align-middle justify-center w-fit p-2  mx-5"
           />
           <Statistic
             title="Total Reservations Count"
@@ -251,18 +251,18 @@ function Dashboard() {
               statisticsData?.total_hotel_reservations +
               statisticsData?.total_car_reservations
             }
-            className="shadow-md  bg-white border rounded-lg flex flex-col items-center align-middle justify-center w-fit p-2 mx-5"
+            className="shadow-md  bg-white border rounded-lg flex flex-col items-center align-middle justify-center w-fit p-2 m-2 mx-5"
           />
           <Statistic
             title="Total Car Reservations Count"
             value={statisticsData?.total_car_reservations}
-            className="shadow-md  bg-white border rounded-lg flex flex-col items-center align-middle  w-fit p-2 mx-5"
+            className="shadow-md  bg-white border rounded-lg flex flex-col items-center align-middle  w-fit p-2 m-2 mx-5"
           />
 
           <Statistic
             title="Total Hotel Reservations Count"
             value={statisticsData?.total_hotel_reservations}
-            className="shadow-md  bg-white border rounded-lg flex flex-col items-center align-middle  w-fit p-2 mx-5"
+            className="shadow-md  bg-white border rounded-lg flex flex-col items-center align-middle  w-fit p-2 m-2 mx-5"
           />
         </div>
         <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row justify-center items-center content-center">
@@ -273,23 +273,23 @@ function Dashboard() {
               statisticsData?.total_final_price_car +
               statisticsData?.total_final_price_hotel
             }
-            className="shadow-md  bg-white border rounded-lg flex flex-col items-center align-middle  w-fit p-2 mx-5"
+            className="shadow-md  bg-white border rounded-lg flex flex-col items-center align-middle  w-fit p-2 m-2 mx-5"
           />
           <Statistic
             prefix={"$"}
             title="Total Car Reservations Revenue"
             value={statisticsData?.total_final_price_car}
-            className="shadow-md  bg-white border rounded-lg flex flex-col items-center align-middle  w-fit p-2 mx-5"
+            className="shadow-md  bg-white border rounded-lg flex flex-col items-center align-middle  w-fit p-2 m-2 mx-5"
           />
           <Statistic
             prefix={"$"}
             title="Total Hotel Reservations Revenue"
             value={statisticsData?.total_final_price_hotel}
-            className="shadow-md  bg-white border rounded-lg flex flex-col items-center align-middle  w-fit p-2 mx-5"
+            className="shadow-md  bg-white border rounded-lg flex flex-col items-center align-middle  w-fit p-2 m-2 mx-5"
           />
         </div>
       </Card>
-      <Card className="p-5 border rounded-lg">
+      <Card className="p-5 border rounded-lg overflow-auto">
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
           <Col className="gutter-row" xs={24} sm={24} md={16} lg={16} xl={16}>
             <Form
