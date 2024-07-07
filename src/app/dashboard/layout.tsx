@@ -151,6 +151,7 @@ export default function DashboardLayout({
                         {" "}
                         {item.title}
                       </b>
+                      <>{item.body}</>
                       <small>
                         {new Date(item.created_at).toLocaleString("CA", {
                           hour12: true,
@@ -169,7 +170,7 @@ export default function DashboardLayout({
   }
 
   function markAsRead(id: string) {
-    PatchReq(`notifications/${id}`, { read: true }).then((res) => {
+    PatchReq(`admin-notifications/${id}`, { read: true }).then((res) => {
       if (StatusSuccessCodes.includes(res?.status)) {
         getListNotifications();
       }
