@@ -70,10 +70,10 @@ export default function DashboardLayout({
       navigator.serviceWorker
         .register("/firebase-messaging-sw.js")
         .then((registration) =>
-          console.log("service worker registered Successfully", registration)
+          console.log("service worker registered Successfully")
         )
         .catch((error) => {
-          console.log("service worker registration Failed", error);
+          console.log("service worker registration Failed");
         });
 
       navigator.serviceWorker.addEventListener("message", (event) => {
