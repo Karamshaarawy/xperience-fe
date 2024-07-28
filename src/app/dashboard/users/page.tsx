@@ -43,6 +43,11 @@ function UsersPage() {
       key: "wallet",
     },
     {
+      title: "Points",
+      dataIndex: "points",
+      key: "points",
+    },
+    {
       title: "Rule",
       dataIndex: "is_staff",
       key: "rule",
