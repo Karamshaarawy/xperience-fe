@@ -50,6 +50,16 @@ function ServiceOptionsPage() {
       key: "price",
     },
     {
+      title: "Points",
+      dataIndex: "points",
+      key: "points",
+    },
+    {
+      title: "Points Price",
+      dataIndex: "points_price",
+      key: "points_price",
+    },
+    {
       title: "Max Free",
       dataIndex: "max_free",
       key: "max_free",
@@ -371,6 +381,28 @@ function ServiceOptionsPage() {
                     InActive
                   </Select.Option>
                 </Select>
+              </Form.Item>
+            </div>
+            <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row  gap-2 justify-between">
+              <Form.Item
+                label="Points"
+                name="points"
+                rules={[{ required: true }]}
+                className="w-full"
+              >
+                <InputNumber min={0} className="w-full" placeholder="Points" />
+              </Form.Item>
+              <Form.Item
+                label="Points Price"
+                name="points_price"
+                rules={[{ required: true }]}
+                className="w-full"
+              >
+                <InputNumber
+                  min={0}
+                  className="w-full"
+                  placeholder="Points Price"
+                />
               </Form.Item>
             </div>
 

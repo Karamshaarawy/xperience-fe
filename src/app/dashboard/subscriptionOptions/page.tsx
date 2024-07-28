@@ -48,6 +48,11 @@ function SubscriptionOptionsPage() {
       key: "points",
     },
     {
+      title: "Points Price",
+      dataIndex: "points_price",
+      key: "points_price",
+    },
+    {
       title: "Edit",
       key: "edit",
       render: (record: any) => (
@@ -365,7 +370,19 @@ function SubscriptionOptionsPage() {
                 rules={[{ required: true }]}
                 className="w-full"
               >
-                <InputNumber min={0} className="w-full" placeholder="Price" />
+                <InputNumber min={0} className="w-full" placeholder="Points" />
+              </Form.Item>
+              <Form.Item
+                label="Points Price"
+                name="points_price"
+                rules={[{ required: true }]}
+                className="w-full"
+              >
+                <InputNumber
+                  min={0}
+                  className="w-full"
+                  placeholder="Points Price"
+                />
               </Form.Item>
             </div>
             <SubmitButton
