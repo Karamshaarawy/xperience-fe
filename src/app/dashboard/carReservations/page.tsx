@@ -100,7 +100,12 @@ function CarReservations() {
           <Select
             className="w-full"
             value={record?.status}
-            onChange={(value) => editReservationStatus(value, record.id)}
+            onChange={(value) => editReservationStatus(value, record)}
+            disabled={
+              record.status === "CANCELLED" ||
+              record.status === "REFUNDED" ||
+              record.status === "COMPLETED"
+            }
           >
             <Select.Option
               key="WAITING_FOR_PAYMENT"
@@ -125,6 +130,9 @@ function CarReservations() {
             </Select.Option>
             <Select.Option key="CANCELLED" value={"CANCELLED"}>
               Cancelled
+            </Select.Option>
+            <Select.Option key="REFUNDED" value={"REFUNDED"}>
+              Cancel and Refund
             </Select.Option>
           </Select>
         </>
@@ -210,24 +218,67 @@ function CarReservations() {
     //   key: "options",
     // },
   ];
-
-  function editReservationStatus(value: any, id: any) {
+  const [isWalletCreditRefundModalOpen, setIsWalletCreditRefundModalOpen] =
+    useState<any>(false);
+  function editReservationStatus(value: any, record: any) {
+    setRecordId(record.id);
     setPostEditRequestLoading(true);
-    PatchReq(`reservations/${id}/`, { status: value }).then((res) => {
-      setPostEditRequestLoading(false);
-      if (StatusSuccessCodes.includes(res.status)) {
-        messageApi.success("Reservation Updated Successfully");
-        closeAddCarReservation();
-        getReservationsList();
-      } else {
-        getReservationsList();
-        res?.errors.forEach((err: any) => {
-          messageApi.error(
-            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
-          );
+    if (value === "REFUNDED") {
+      if (record?.payment_method === "POINTS") {
+        PostReq("/payment/refund", {
+          reservation_Id: record.id,
+          refund_method: "POINTS",
+        }).then((res) => {
+          setPostEditRequestLoading(false);
+          if (StatusSuccessCodes.includes(res.status)) {
+            messageApi.success("Refunded Successfully");
+            PatchReq(`reservations/${record?.id}/`, { status: value }).then(
+              (res) => {
+                setPostEditRequestLoading(false);
+                if (StatusSuccessCodes.includes(res.status)) {
+                  messageApi.success("Reservation Updated Successfully");
+                  closeAddCarReservation();
+                  getReservationsList();
+                } else {
+                  getReservationsList();
+                  res?.errors.forEach((err: any) => {
+                    messageApi.error(
+                      `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+                    );
+                  });
+                }
+              }
+            );
+          } else {
+            getReservationsList();
+            res?.errors.forEach((err: any) => {
+              messageApi.error(
+                `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+              );
+            });
+          }
         });
+      } else {
+        setPostEditRequestLoading(false);
+        setIsWalletCreditRefundModalOpen(true);
       }
-    });
+    } else {
+      PatchReq(`reservations/${record?.id}/`, { status: value }).then((res) => {
+        setPostEditRequestLoading(false);
+        if (StatusSuccessCodes.includes(res.status)) {
+          messageApi.success("Reservation Updated Successfully");
+          closeAddCarReservation();
+          getReservationsList();
+        } else {
+          getReservationsList();
+          res?.errors.forEach((err: any) => {
+            messageApi.error(
+              `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+            );
+          });
+        }
+      });
+    }
   }
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
@@ -338,6 +389,7 @@ function CarReservations() {
 
   function closeAddCarReservation() {
     setAddCarReservationModalOpen(false);
+    setIsWalletCreditRefundModalOpen(false);
     addCarReservationForm.resetFields();
   }
 
@@ -524,8 +576,86 @@ function CarReservations() {
     replace(`${pathname}?${params.toString()}`);
     getReservationsList();
   }
+
+  function refundWalletCredit(values: any) {
+    setPostEditRequestLoading(true);
+
+    values.reservation_id = recordId;
+
+    PostReq("payment/refund/", values).then((res) => {
+      setPostEditRequestLoading(false);
+      if (StatusSuccessCodes.includes(res.status)) {
+        messageApi.success("Refunded Successfully");
+        setIsWalletCreditRefundModalOpen(false);
+        PatchReq(`reservations/${recordId}/`, { status: "REFUNDED" }).then(
+          (res) => {
+            setPostEditRequestLoading(false);
+            if (StatusSuccessCodes.includes(res.status)) {
+              messageApi.success("Reservation Updated Successfully");
+              getReservationsList();
+            } else {
+              getReservationsList();
+              res?.errors.forEach((err: any) => {
+                messageApi.error(
+                  `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+                );
+              });
+            }
+          }
+        );
+      } else {
+        getReservationsList();
+        res?.errors.forEach((err: any) => {
+          messageApi.error(
+            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+          );
+        });
+      }
+    });
+  }
+  const [refundMethodForm] = Form.useForm();
+
   return (
     <Fragment>
+      <Modal
+        open={isWalletCreditRefundModalOpen}
+        title={"Choose Refund Method"}
+        onCancel={closeAddCarReservation}
+        width={700}
+        maskClosable={false}
+        okButtonProps={{ style: { display: "none" } }}
+        cancelButtonProps={{ style: { display: "none" } }}
+        afterClose={() => refundMethodForm.resetFields()}
+      >
+        <Form
+          form={refundMethodForm}
+          layout="vertical"
+          name="refundMethodForm"
+          onFinish={refundWalletCredit}
+          initialValues={{ options: [{}] }}
+        >
+          <Form.Item
+            name="refund_method"
+            label="Refund Method"
+            rules={[{ required: true }]}
+            className="w-full"
+          >
+            <Select className="w-full">
+              <Select.Option key="CREDIT_CARD" value={"CREDIT_CARD"}>
+                Credit Card
+              </Select.Option>
+
+              <Select.Option key="WALLET" value={"WALLET"}>
+                Wallet
+              </Select.Option>
+            </Select>
+          </Form.Item>
+          <SubmitButton
+            form={refundMethodForm}
+            loading={postEditRequestLoading}
+          />
+        </Form>
+      </Modal>
       {contextHolder}
       <div className="w-full h-fit bg-[#363B5E] py-8 px-5 flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row justify-between items-center content-center">
         <div className="flex flex-row flex-wrap gap-5 w-fit ">
@@ -932,6 +1062,12 @@ function CarReservations() {
             rowKey={"id"}
             scroll={{ x: 0 }}
             loading={loadReservationsList || postEditRequestLoading}
+            rowClassName={(record: any, index: any) => {
+              return record.status === "CANCELLED" ||
+                record.status === "REFUNDED"
+                ? "bg-red-100 red-bg hover:bg-red-200"
+                : "hover:bg-gray-100";
+            }}
             expandable={{
               expandedRowRender: (record) => (
                 <div className="p-1">
