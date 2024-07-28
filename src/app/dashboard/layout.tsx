@@ -40,6 +40,7 @@ import { ToastContainer } from "react-toastify";
 import { GetReq, PatchReq } from "../api/api";
 import { StatusSuccessCodes } from "../api/successStatus";
 import { firebaseCloudMessaging } from "../config/firebase";
+import { CiDiscount1 } from "react-icons/ci";
 
 const { Header, Sider, Content } = Layout;
 export default function DashboardLayout({
@@ -470,6 +471,23 @@ export default function DashboardLayout({
                           color="white"
                         />
                         Transactions
+                      </Space>
+                    </span>
+                  </Link>
+                ),
+              },
+              {
+                key: `/dashboard/promocode`,
+                label: (
+                  <Link href={`/dashboard/promocode`}>
+                    <span className="text-white">
+                      <Space>
+                        <CiDiscount1
+                          size={collapsed ? 25 : 20}
+                          style={{ marginInlineEnd: "10px" }}
+                          color="white"
+                        />
+                        Promo Codes
                       </Space>
                     </span>
                   </Link>
