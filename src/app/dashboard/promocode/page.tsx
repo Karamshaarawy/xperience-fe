@@ -1,34 +1,32 @@
 "use client";
-import { Fragment, useEffect, useRef, useState } from "react";
-import isAuth from "../../../../components/isAuth";
+import { DeleteReq, GetReq, PatchReq, PostReq } from "@/app/api/api";
+import { StatusSuccessCodes } from "@/app/api/successStatus";
 import {
+  Badge,
   Button,
+  DatePicker,
   Form,
   FormInstance,
+  Image,
   Input,
   InputNumber,
+  message,
   Modal,
   Popconfirm,
-  Image,
   Select,
   Table,
   TableColumnsType,
   Upload,
   UploadFile,
-  message,
-  Tooltip,
-  Badge,
-  DatePicker,
 } from "antd";
-import dayjs from "dayjs";
-import { isMobile } from "react-device-detect";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { DeleteReq, GetReq, PatchReq, PostReq } from "@/app/api/api";
-import { StatusSuccessCodes } from "@/app/api/successStatus";
-import TextArea from "antd/es/input/TextArea";
-import { MdDeleteForever } from "react-icons/md";
-import { BiUpload } from "react-icons/bi";
 import { RangePickerProps } from "antd/es/date-picker";
+import dayjs from "dayjs";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { isMobile } from "react-device-detect";
+import { MdDeleteForever } from "react-icons/md";
+
+import isAuth from "../../../../components/isAuth";
 
 function HotelServicesPage() {
   const columns: TableColumnsType<any> = [
@@ -88,10 +86,10 @@ function HotelServicesPage() {
       key: "delete",
       render: (record: any) => (
         <Popconfirm
-          title="Delete Hotel Service"
-          description="Are You Sure You Want To Delete This Hotel Service?"
+          title="Delete Promo Code"
+          description="Are You Sure You Want To Delete This Promo Code?"
           onConfirm={() => {
-            deleteHotelService(record);
+            deletePromoCode(record);
           }}
           okText="Delete"
           cancelText="Cancel"
@@ -112,12 +110,12 @@ function HotelServicesPage() {
     },
   ];
 
-  function deleteHotelService(record: any) {
-    DeleteReq(`hotel-services/${record.id}/`).then((res) => {
-      // setPostEidetRequestLoading(false);
+  function deletePromoCode(record: any) {
+    DeleteReq(`promocodes/${record.id}/`).then((res) => {
+      // setPostEditRequestLoading(false);
       if (StatusSuccessCodes.includes(res.status)) {
-        messageApi.success("Car Service Deleted Successfully");
-        getHotelServicesList();
+        messageApi.success("Promo Code Deleted Successfully");
+        getPromoCodesList();
       } else {
         res?.errors.forEach((err: any) => {
           messageApi.error(
@@ -286,21 +284,17 @@ function HotelServicesPage() {
   const [hotelFileList, setHotelFileList] = useState<UploadFile[]>([]);
 
   useEffect(() => {
-    getHotelServicesList();
-    getHotelFeatures();
+    getPromoCodesList();
   }, []);
-  const [loadHotelServicesList, setLoadHotelServicesList] =
-    useState<any>(false);
+  const [loadPromoCodesList, setLoadPromoCodesList] = useState<any>(false);
 
-  function getHotelServicesList(page: number = 1, pageSize: number = 10) {
+  function getPromoCodesList(page: number = 1, pageSize: number = 10) {
     setCurrentPage(page);
-    let url = `hotel-services/?limit=${pageSize}&offset=${
-      (page - 1) * pageSize
-    }`;
+    let url = `promocodes/?limit=${pageSize}&offset=${(page - 1) * pageSize}`;
     params.forEach((value: any, key: any) => (url += `&${key}=${value}`));
-    setLoadHotelServicesList(true);
+    setLoadPromoCodesList(true);
     GetReq(url).then((res) => {
-      setLoadHotelServicesList(false);
+      setLoadPromoCodesList(false);
       if (StatusSuccessCodes.includes(res.status)) {
         setHotelServicesList(res.data.results);
         setHotelServicesCount(res.data.count);
@@ -322,21 +316,26 @@ function HotelServicesPage() {
     }
 
     replace(`${pathname}?${params.toString()}`);
-    getHotelServicesList();
+    getPromoCodesList();
   }
 
   const onSearchReset = () => {
     searchForm.resetFields();
     params.has("search") && params.delete("search");
     replace(`${pathname}`);
-    getHotelServicesList();
+    getPromoCodesList();
   };
 
   function openAddEditModel(record?: any) {
     setAddEditModalOpen(true);
     record.id ? setIsEdit(true) : setIsEdit(false);
     setRecordId(record?.id);
-    record.id ? AddEditPromoCodeForm.setFieldsValue(record) : null;
+    record.id
+      ? AddEditPromoCodeForm.setFieldsValue({
+          ...record,
+          expiration_date: dayjs(record?.expiration_date),
+        })
+      : null;
   }
 
   function handleCancel() {
@@ -346,46 +345,39 @@ function HotelServicesPage() {
   }
 
   function addEditPromoCode(values: any) {
+    values.expiration_date = values.expiration_date.format("YYYY-MM-DD");
     console.log(values);
-    // values.features = [values.features];
-    // const data = new FormData();
-    // for (const key in values) {
-    //   if (key === "image" && typeof values[key] === "string") {
-    //     continue;
-    //   } else {
-    //     data.append(`${key}`, values[key]);
-    //   }
-    // }
-    // setPostEditRequestLoading(true);
-    // isEdit
-    //   ? PatchReq(`hotel-services/${recordId}/`, values).then((res) => {
-    //       setPostEditRequestLoading(false);
-    //       if (StatusSuccessCodes.includes(res.status)) {
-    //         messageApi.success("Hotel Service Updated Successfully");
-    //         handleCancel();
-    //         getHotelServicesList();
-    //       } else {
-    //         res?.errors.forEach((err: any) => {
-    //           messageApi.error(
-    //             `${err.attr ? err.attr + ":" + err.detail : err.detail} `
-    //           );
-    //         });
-    //       }
-    //     })
-    //   : PostReq(`hotel-services/`, values).then((res) => {
-    //       setPostEditRequestLoading(false);
-    //       if (StatusSuccessCodes.includes(res.status)) {
-    //         messageApi.success("Hotel Service Added Successfully");
-    //         handleCancel();
-    //         getHotelServicesList();
-    //       } else {
-    //         res?.errors.forEach((err: any) => {
-    //           messageApi.error(
-    //             `${err.attr ? err.attr + ":" + err.detail : err.detail} `
-    //           );
-    //         });
-    //       }
-    //     });
+
+    setPostEditRequestLoading(true);
+    isEdit
+      ? PatchReq(`promocodes/${recordId}/`, values).then((res) => {
+          setPostEditRequestLoading(false);
+          if (StatusSuccessCodes.includes(res.status)) {
+            messageApi.success("Promo Code Updated Successfully");
+            handleCancel();
+            getPromoCodesList();
+          } else {
+            res?.errors.forEach((err: any) => {
+              messageApi.error(
+                `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+              );
+            });
+          }
+        })
+      : PostReq(`promocodes/`, values).then((res) => {
+          setPostEditRequestLoading(false);
+          if (StatusSuccessCodes.includes(res.status)) {
+            messageApi.success("Promo Code Added Successfully");
+            handleCancel();
+            getPromoCodesList();
+          } else {
+            res?.errors.forEach((err: any) => {
+              messageApi.error(
+                `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+              );
+            });
+          }
+        });
   }
 
   const handleImagesUpload = (e: any) => {
@@ -475,7 +467,7 @@ function HotelServicesPage() {
             <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row gap-2 justify-between">
               <Form.Item
                 label="Name"
-                name="name"
+                name="code"
                 rules={[{ required: true }]}
                 className="w-full"
               >
@@ -539,18 +531,6 @@ function HotelServicesPage() {
                 </Select>
               </Form.Item>
 
-              <Form.Item
-                label="Number Of Beds"
-                name="number_of_beds"
-                rules={[{ required: true }]}
-                className="w-full"
-              >
-                <InputNumber
-                  min={1}
-                  className="w-full"
-                  placeholder="Number Of Beds"
-                />
-              </Form.Item>
               <Form.Item
                 name="expiration_date"
                 label="Expiration Date"
@@ -618,7 +598,7 @@ function HotelServicesPage() {
             columns={columns}
             rowKey={"id"}
             scroll={{ x: 0 }}
-            loading={loadHotelServicesList}
+            loading={loadPromoCodesList}
             pagination={{
               current: currentPage,
               total: hotelServicesCount,
@@ -627,7 +607,7 @@ function HotelServicesPage() {
                 return `${range[0]}-${range[1]} of ${total} items`;
               },
               onChange: (page, pageSize) => {
-                getHotelServicesList(page, pageSize);
+                getPromoCodesList(page, pageSize);
               },
             }}
           />
