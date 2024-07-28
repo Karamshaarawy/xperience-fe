@@ -97,8 +97,17 @@ function CarReservations() {
             >
               Waiting For Payment
             </Select.Option>
+            <Select.Option
+              key="WAITING_FOR_CONFIRMATION"
+              value={"WAITING_FOR_CONFIRMATION"}
+            >
+              Waiting For Confirmation
+            </Select.Option>
             <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
               Confirmed
+            </Select.Option>
+            <Select.Option key="PAID" value={"PAID"}>
+              Paid
             </Select.Option>
             <Select.Option key="COMPLETED" value={"COMPLETED"}>
               Completed
@@ -771,15 +780,56 @@ function CarReservations() {
           >
             <TextArea className="w-full" />
           </Form.Item>
+          <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row gap-2">
+            <Form.Item
+              name="payment_method"
+              label="Payment Method"
+              rules={[{ required: true }]}
+              className="w-full"
+            >
+              <Select className="w-full">
+                <Select.Option key="CREDIT_CARD" value={"CREDIT_CARD"}>
+                  Credit Card
+                </Select.Option>
+
+                <Select.Option key="WALLET" value={"WALLET"}>
+                  Wallet
+                </Select.Option>
+
+                <Select.Option
+                  key="CASH_ON_DELIVERY"
+                  value={"CASH_ON_DELIVERY"}
+                >
+                  Cash On Delivery
+                </Select.Option>
+
+                <Select.Option key="CAR_POS" value={"CAR_POS"}>
+                  Car Point of Sale
+                </Select.Option>
+
+                <Select.Option key="POINTS" value={"POINTS"}>
+                  Points
+                </Select.Option>
+              </Select>
+            </Form.Item>
+            <Form.Item
+              name="promocode"
+              label="Promo Code"
+              rules={[{ required: true }]}
+              className="w-full"
+            >
+              <Input allowClear placeholder="Promo Code . . ." />
+            </Form.Item>
+          </div>
           {/* <Form.Item
             className="w-full"
             name="additional_fees"
             label="Additional Fees"
-          >
+            >
             <InputNumber
-              className="w-full"
-              onChange={(e) => {
-                addCarReservationForm.setFieldValue("final_price", null);
+            className="w-full"
+            onChange={(e) => {
+              addCarReservationForm.setFieldValue("final_price", null);
               }}
             />
           </Form.Item> */}
