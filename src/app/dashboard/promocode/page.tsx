@@ -112,7 +112,6 @@ function HotelServicesPage() {
 
   function deletePromoCode(record: any) {
     DeleteReq(`promocodes/${record.id}/`).then((res) => {
-      // setPostEditRequestLoading(false);
       if (StatusSuccessCodes.includes(res.status)) {
         messageApi.success("Promo Code Deleted Successfully");
         getPromoCodesList();
@@ -125,141 +124,8 @@ function HotelServicesPage() {
       }
     });
   }
-  function openAddEditImages(record?: any) {
-    setAddEditImagesOpen(true);
-    getHotelImages(record.id);
-    setRecordId(record?.id);
-  }
-  const [uploadingImage, setUploadingImage] = useState<any>(false);
+
   const [maxLimit, setMaxLimit] = useState<any>();
-
-  const [loadHotelServicesImages, setLoadHotelServicesImages] =
-    useState<any>(false);
-  const [hotelImagesList, setHotelImagesList] = useState<any[]>([]);
-
-  function getHotelImages(id: number) {
-    setLoadHotelServicesImages(true);
-    let url = `hotel-images/?hotel_service=${id}`;
-    GetReq(url).then((res) => {
-      setLoadHotelServicesImages(false);
-      if (StatusSuccessCodes.includes(res.status)) {
-        setHotelImagesList(res.data.results);
-      } else {
-        res?.errors.forEach((err: any) => {
-          messageApi.error(
-            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
-          );
-        });
-      }
-    });
-  }
-
-  const imagesColumns: TableColumnsType<any> = [
-    {
-      title: "Image",
-      dataIndex: "image",
-      key: "image",
-      render: (image: string) => (
-        <Image
-          src={image}
-          alt="Hotel Image"
-          height={60}
-          width={60}
-          fallback="/images/noPreview.jpeg"
-        />
-      ),
-    },
-    {
-      title: "Edit",
-      key: "edit",
-      render: (record: any) => (
-        <Upload
-          maxCount={1}
-          accept=".png, .jpeg"
-          style={{ width: "100%" }}
-          className="flex flex-col cursor-pointer avatar-uploader"
-          fileList={hotelFileList}
-          onChange={(e: any) => handleImagesChange(e, record)}
-        >
-          <Button
-            style={{
-              backgroundColor: "#363B5E",
-              borderColor: "#F1DF78",
-            }}
-            className=" text-white"
-            id={record.id}
-            loading={uploadingImage}
-          >
-            Change
-          </Button>
-        </Upload>
-      ),
-    },
-    {
-      title: "Delete",
-      key: "delete",
-      render: (record: any) => (
-        <Popconfirm
-          title="Delete Hotel Image"
-          description="Are You Sure You Want To Delete This Hotel Image?"
-          onConfirm={() => {
-            deleteHotelImage(record);
-          }}
-          okText="Delete"
-          cancelText="Cancel"
-          okButtonProps={{
-            style: {
-              backgroundColor: "rgba(9, 16, 29, 1)",
-              color: "#ffffffd4",
-            },
-          }}
-        >
-          <MdDeleteForever
-            size={20}
-            color={"#DB4437"}
-            className="cursor-pointer"
-          />
-        </Popconfirm>
-      ),
-    },
-  ];
-
-  function deleteHotelImage(record: any) {
-    setLoadHotelServicesImages(true);
-    DeleteReq(`hotel-images/${record.id}/`).then((res) => {
-      setLoadHotelServicesImages(false);
-      if (StatusSuccessCodes.includes(res.status)) {
-        messageApi.success("Hotel Image Deleted Successfully");
-        getHotelImages(record.hotel_service);
-      } else {
-        res?.errors.forEach((err: any) => {
-          messageApi.error(
-            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
-          );
-        });
-      }
-    });
-  }
-
-  const handleImagesChange = (e: any, record: any) => {
-    let imageData = new FormData();
-    imageData.append("image", e?.file?.originFileObj);
-    imageData.append("hotel_service", JSON.stringify(recordId));
-    setUploadingImage(true);
-    PatchReq(`hotel-images/${record.id}/`, imageData).then((res) => {
-      setUploadingImage(false);
-      if (StatusSuccessCodes.includes(res.status)) {
-        messageApi.success("Image Changed Successfully");
-        getHotelImages(recordId ? recordId : 0);
-      } else {
-        res?.errors.forEach((err: any) => {
-          messageApi.error(
-            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
-          );
-        });
-      }
-    });
-  };
 
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
@@ -273,7 +139,6 @@ function HotelServicesPage() {
   const [hotelServicesList, setHotelServicesList] = useState<any[]>([]);
   const [hotelServicesCount, setHotelServicesCount] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [addEditImagesOpen, setAddEditImagesOpen] = useState<any>(false);
 
   const [AddEditPromoCodeForm] = Form.useForm();
   const [postEditRequestLoading, setPostEditRequestLoading] =
@@ -281,7 +146,6 @@ function HotelServicesPage() {
   const [addEditModalOpen, setAddEditModalOpen] = useState<any>(false);
   const [isEdit, setIsEdit] = useState<any>(false);
   const [recordId, setRecordId] = useState<number | undefined>(undefined);
-  const [hotelFileList, setHotelFileList] = useState<UploadFile[]>([]);
 
   useEffect(() => {
     getPromoCodesList();
@@ -341,7 +205,6 @@ function HotelServicesPage() {
   function handleCancel() {
     setAddEditModalOpen(false);
     AddEditPromoCodeForm.resetFields();
-    setAddEditImagesOpen(false);
   }
 
   function addEditPromoCode(values: any) {
@@ -379,54 +242,6 @@ function HotelServicesPage() {
           }
         });
   }
-
-  const handleImagesUpload = (e: any) => {
-    let imageData = new FormData();
-    imageData.append("image", e?.file?.originFileObj);
-    imageData.append("hotel_service", JSON.stringify(recordId));
-    setUploadingImage(true);
-    PostReq(`hotel-images/`, imageData).then((res) => {
-      setUploadingImage(false);
-      if (StatusSuccessCodes.includes(res.status)) {
-        messageApi.success("Image Added Successfully");
-        getHotelImages(recordId ? recordId : 0);
-      } else {
-        res?.errors.forEach((err: any) => {
-          messageApi.error(
-            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
-          );
-        });
-      }
-    });
-  };
-
-  function getHotelFeatures() {
-    let url = `hotel-service-features/?limit=99999`;
-    GetReq(url).then((res: any) => {
-      if (StatusSuccessCodes.includes(res.status)) {
-        let list: any = [];
-        res.data.results.map((rec: any) => {
-          list.push({
-            label: rec.name,
-            value: rec.id,
-            key: rec.id,
-          });
-        });
-        setHotelFeaturesDropDown(list);
-      } else {
-        res?.errors.forEach((err: any) => {
-          messageApi.error(
-            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
-          );
-        });
-      }
-    });
-  }
-  // const OPTIONS = ["Apples", "Nails", "Bananas", "Helicopters"];
-
-  const filteredOptions = hotelFeaturesDropDown.filter(
-    (o: any) => !selectedItems.includes(o)
-  );
 
   const disabledDate: RangePickerProps["disabledDate"] = (current) => {
     return current < dayjs().startOf("day");
