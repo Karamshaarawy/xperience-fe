@@ -54,11 +54,21 @@ function ReservationsPage() {
       render: (record: any) => record?.hotel_reservations[0]?.check_out_date,
     },
     {
+      title: "Promo Code",
+      dataIndex: "promocode",
+      key: "promocode",
+      render: (record: any) => (record?.promocode ? record?.promocode : "--"),
+    },
+    {
       title: "Price",
       key: "price",
       render: (record: any) => record?.hotel_reservations[0]?.final_price,
     },
-
+    {
+      title: "Payment Method",
+      dataIndex: "payment_method",
+      key: "payment_method",
+    },
     {
       title: "Created By",
       dataIndex: ["created_by", "name"],
@@ -243,7 +253,6 @@ function ReservationsPage() {
   function addHotelReservation(values: any) {
     calculateFinalPrice();
 
-    delete values.additional_fees;
     values.check_in_date = values.check_in_date.format("YYYY-MM-DD");
     values.check_out_date = values.check_out_date.format("YYYY-MM-DD");
     values.options = values?.options?.map((rec: any) => {
@@ -253,7 +262,12 @@ function ReservationsPage() {
       };
     });
     values.hotel_service_id = values.hotel_service_id.value;
-    let data: any = { user: values.user, status: values.status };
+    let data: any = {
+      user: values.user,
+      status: values.status,
+      payment_method: values.payment_method,
+      promocode: values.promocode,
+    };
     delete values.user;
     delete values.status;
     data.hotel_reservations = [values];
@@ -606,7 +620,7 @@ function ReservationsPage() {
               <Form.Item
                 name="promocode"
                 label="Promo Code"
-                rules={[{ required: true }]}
+                // rules={[{ required: true }]}
                 className="w-full"
               >
                 <Input allowClear placeholder="Promo Code . . ." />

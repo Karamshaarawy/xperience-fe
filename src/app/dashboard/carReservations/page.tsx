@@ -70,6 +70,17 @@ function CarReservations() {
       render: (record: any) => record?.car_reservations[0]?.dropoff_address,
     },
     {
+      title: "Promo Code",
+      dataIndex: "promocode",
+      key: "promocode",
+      render: (record: any) => (record?.promocode ? record?.promocode : "--"),
+    },
+    {
+      title: "Payment Method",
+      dataIndex: "payment_method",
+      key: "payment_method",
+    },
+    {
       title: "Price",
       //   dataIndex: ["car_reservations", "car_service"],
       key: "price",
@@ -429,7 +440,12 @@ function CarReservations() {
       };
     });
 
-    let data: any = { user: values.user, status: values.status };
+    let data: any = {
+      user: values.user,
+      status: values.status,
+      payment_method: values.payment_method,
+      promocode: values.promocode,
+    };
     delete values.user;
     delete values.status;
     data.car_reservations = [values];
@@ -815,7 +831,7 @@ function CarReservations() {
             <Form.Item
               name="promocode"
               label="Promo Code"
-              rules={[{ required: true }]}
+              // rules={[{ required: true }]}
               className="w-full"
             >
               <Input allowClear placeholder="Promo Code . . ." />
