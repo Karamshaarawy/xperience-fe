@@ -13,7 +13,12 @@ import {
   Popconfirm,
   Select,
   Table,
+  // Image,
   TableColumnsType,
+  Upload,
+  UploadFile,
+  GetProp,
+  UploadProps,
 } from "antd";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Fragment, useEffect, useState } from "react";
@@ -21,6 +26,17 @@ import { MdDeleteForever } from "react-icons/md";
 
 import isAuth from "../../../../components/isAuth";
 import TextArea from "antd/es/input/TextArea";
+import { BiPlus } from "react-icons/bi";
+
+type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+
+const getBase64 = (file: FileType): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (error) => reject(error);
+  });
 
 function HotelServiceFeaturesPage() {
   const columns: TableColumnsType<any> = [
@@ -79,6 +95,11 @@ function HotelServiceFeaturesPage() {
       ),
     },
   ];
+
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [iconFileList, setIconsFileList] = useState<UploadFile[]>([]);
+  const [imageUrl, setImageUrl] = useState<any>();
 
   function deleteHotelFeature(record: any) {
     DeleteReq(`hotel-service-features/${record.id}/`).then((res) => {
@@ -170,7 +191,18 @@ function HotelServiceFeaturesPage() {
     setAddEditModalOpen(true);
     record.id ? setIsEdit(true) : setIsEdit(false);
     setRecordId(record?.id);
-    record.id ? AddEditHotelFeatureForm.setFieldsValue(record) : null;
+
+    if (record.id) {
+      setIconsFileList([
+        {
+          uid: "1",
+          name: "xxx.png",
+          url: record.image,
+          percent: 33,
+        },
+      ]);
+      AddEditHotelFeatureForm.setFieldsValue(record);
+    }
   }
 
   function handleCancel() {
@@ -179,14 +211,24 @@ function HotelServiceFeaturesPage() {
   }
 
   function addEditHotelFeatures(values: any) {
+    console.log(values);
     setPostEditRequestLoading(true);
+    const data = new FormData();
+    for (const key in values) {
+      if (key === "image" && typeof values[key] === "string") {
+        continue;
+      } else {
+        data.append(`${key}`, values[key]);
+      }
+    }
     isEdit
-      ? PatchReq(`hotel-service-features/${recordId}/`, values).then((res) => {
+      ? PatchReq(`hotel-service-features/${recordId}/`, data).then((res) => {
           setPostEditRequestLoading(false);
           if (StatusSuccessCodes.includes(res.status)) {
             messageApi.success("Updated Successfully");
             handleCancel();
             getHotelFeaturesList();
+            setIconsFileList([]);
           } else {
             res?.errors.forEach((err: any) => {
               messageApi.error(
@@ -195,12 +237,13 @@ function HotelServiceFeaturesPage() {
             });
           }
         })
-      : PostReq(`hotel-service-features/`, values).then((res) => {
+      : PostReq(`hotel-service-features/`, data).then((res) => {
           setPostEditRequestLoading(false);
           if (StatusSuccessCodes.includes(res.status)) {
             messageApi.success("Added Successfully");
             handleCancel();
             getHotelFeaturesList();
+            setIconsFileList([]);
           } else {
             res?.errors.forEach((err: any) => {
               messageApi.error(
@@ -210,6 +253,20 @@ function HotelServiceFeaturesPage() {
           }
         });
   }
+
+  const iconImagesFile = (e: any) => {
+    setIconsFileList(e.fileList);
+    return e?.file?.originFileObj;
+  };
+
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as FileType);
+    }
+
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+  };
 
   return (
     <Fragment>
@@ -266,6 +323,72 @@ function HotelServiceFeaturesPage() {
             >
               <TextArea placeholder="Enter Feature Description" />
             </Form.Item>
+            <Form.Item
+              label="Image"
+              name="image"
+              getValueFromEvent={iconImagesFile}
+              rules={[
+                { required: true },
+                {
+                  validator(_, value) {
+                    if (value && typeof value !== "string") {
+                      const validateDimensions = (value: any) => {
+                        return new Promise((resolve, reject) => {
+                          const img = new Image();
+                          img.src = URL.createObjectURL(value);
+                          img.onload = () => {
+                            const { width, height } = img;
+                            if (width <= 1000 && height <= 1000) {
+                              resolve("");
+                            } else {
+                              reject("false");
+                            }
+                          };
+                        });
+                      };
+                      return validateDimensions(value);
+                    } else {
+                      console.log("value");
+                      return Promise.resolve();
+                    }
+                  },
+                },
+              ]}
+            >
+              <Upload
+                maxCount={1}
+                accept=".png, .jpeg"
+                listType="picture-card"
+                style={{ width: "100%" }}
+                className="flex flex-col cursor-pointer avatar-uploader"
+                fileList={iconFileList}
+                onPreview={handlePreview}
+                // onChange={handleChange}
+              >
+                {iconFileList.length >= 1 ? null : iconFileList.length === 0 &&
+                  imageUrl === undefined ? (
+                  <div>
+                    <BiPlus
+                      size={20}
+                      color="rgba(218, 222, 227, 1)"
+                      className="mx-[250px]"
+                    />
+                    <div>Upload</div>
+                  </div>
+                ) : null}
+              </Upload>
+            </Form.Item>
+            {/* {previewImage && (
+              <Image
+                preview={{
+                  visible: previewOpen,
+                  onVisibleChange: (visible) => setPreviewOpen(visible),
+                  afterOpenChange: (visible) => !visible && setPreviewImage(""),
+                }}
+                src={previewImage}
+                alt="Preview Image"
+              />
+            )} */}
 
             <SubmitButton
               form={AddEditHotelFeatureForm}
