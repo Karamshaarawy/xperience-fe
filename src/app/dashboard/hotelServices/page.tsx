@@ -72,8 +72,13 @@ function HotelServicesPage() {
     },
     {
       title: "Day Price",
-      dataIndex: "day_price",
+      // dataIndex: "day_price",
       key: "day_price",
+      render: (record: any) => (
+        <div>
+          {record?.day_price} EGP/ {record?.dollar_day_price} USD
+        </div>
+      ),
     },
     {
       title: "Points",
@@ -372,7 +377,13 @@ function HotelServicesPage() {
     setAddEditModalOpen(true);
     record.id ? setIsEdit(true) : setIsEdit(false);
     setRecordId(record?.id);
-    record.id ? AddEditHotelServiceForm.setFieldsValue(record) : null;
+    if (record.id) {
+      let features = record?.features?.map((feat: any) => {
+        return feat.id;
+      });
+      console.log(features);
+      AddEditHotelServiceForm.setFieldsValue(record);
+    }
   }
 
   function handleCancel() {
@@ -638,7 +649,7 @@ function HotelServicesPage() {
             </div>
             <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row gap-2 justify-between">
               <Form.Item
-                label="Day Price"
+                label="Day Price EGP"
                 name="day_price"
                 rules={[{ required: true }]}
                 className="w-full"
@@ -649,6 +660,20 @@ function HotelServicesPage() {
                   placeholder="Day Price"
                 />
               </Form.Item>
+              <Form.Item
+                label="Day Price USD"
+                name="dollar_day_price"
+                rules={[{ required: true }]}
+                className="w-full"
+              >
+                <InputNumber
+                  min={1}
+                  className="w-full"
+                  placeholder="Day Price"
+                />
+              </Form.Item>
+            </div>
+            <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row gap-2 justify-between">
               <Form.Item
                 label="Points"
                 name="points"
