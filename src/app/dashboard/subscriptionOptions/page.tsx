@@ -39,8 +39,13 @@ function SubscriptionOptionsPage() {
     },
     {
       title: "Price",
-      dataIndex: "price",
-      key: "price",
+      // dataIndex: "day_price",
+      key: "day_price",
+      render: (record: any) => (
+        <div>
+          {record?.price} EGP/ {record?.dollar_price} USD
+        </div>
+      ),
     },
     {
       title: "Points",
@@ -226,7 +231,18 @@ function SubscriptionOptionsPage() {
     setAddEditModalOpen(true);
     record.id ? setIsEdit(true) : setIsEdit(false);
     setRecordId(record?.id);
-    record.id ? AddEditSubscriptionOptionForm.setFieldsValue(record) : null;
+    console.log(record?.car_service?.id);
+    record.id
+      ? AddEditSubscriptionOptionForm.setFieldsValue({
+          car_service: record?.car_service?.id,
+          type: record?.type,
+          duration_hours: record?.duration_hours,
+          price: record?.price,
+          dollar_price: record?.dollar_price,
+          points: record?.points,
+          points_price: record?.points_price,
+        })
+      : null;
   }
 
   function handleCancel() {
@@ -364,6 +380,16 @@ function SubscriptionOptionsPage() {
               >
                 <InputNumber min={1} className="w-full" placeholder="Price" />
               </Form.Item>
+              <Form.Item
+                label="Price USD"
+                name="dollar_price"
+                rules={[{ required: true }]}
+                className="w-full"
+              >
+                <InputNumber min={1} className="w-full" placeholder="Price" />
+              </Form.Item>
+            </div>
+            <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row  gap-2 justify-between">
               <Form.Item
                 label="Points"
                 name="points"
