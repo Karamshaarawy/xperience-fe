@@ -46,14 +46,19 @@ function ServiceOptionsPage() {
     },
     {
       title: "Price",
-      dataIndex: "price",
-      key: "price",
+      // dataIndex: "day_price",
+      key: "day_price",
+      render: (record: any) => (
+        <div>
+          {record?.price} EGP/ {record?.dollar_price} USD
+        </div>
+      ),
     },
-    {
-      title: "Points",
-      dataIndex: "points",
-      key: "points",
-    },
+    // {
+    //   title: "Points",
+    //   dataIndex: "points",
+    //   key: "points",
+    // },
     {
       title: "Points Price",
       dataIndex: "points_price",
@@ -348,13 +353,23 @@ function ServiceOptionsPage() {
             </Form.Item>
             <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row gap-2 justify-between">
               <Form.Item
-                label="Price"
+                label="Price EGP"
                 name="price"
                 rules={[{ required: true }]}
                 className="w-full"
               >
                 <InputNumber min={1} className="w-full" placeholder="Price" />
               </Form.Item>
+              <Form.Item
+                label="Price USD"
+                name="dollar_price"
+                rules={[{ required: true }]}
+                className="w-full"
+              >
+                <InputNumber min={1} className="w-full" placeholder="Price" />
+              </Form.Item>
+            </div>
+            <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row gap-2 justify-between">
               <Form.Item
                 label="Max Free"
                 name="max_free"
@@ -384,14 +399,14 @@ function ServiceOptionsPage() {
               </Form.Item>
             </div>
             <div className="flex flex-col sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row  gap-2 justify-between">
-              <Form.Item
+              {/* <Form.Item
                 label="Points"
                 name="points"
                 rules={[{ required: true }]}
                 className="w-full"
               >
                 <InputNumber min={0} className="w-full" placeholder="Points" />
-              </Form.Item>
+              </Form.Item> */}
               <Form.Item
                 label="Points Price"
                 name="points_price"
