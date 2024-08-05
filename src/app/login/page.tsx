@@ -104,7 +104,16 @@ export default function Login() {
         <div className="bg-[#181C33] md:flex md:items-center md:justify-end w-full sm:w-auto md:h-full md:w-1/4 py-8 px-4 sm:p-12 md:p-16 sm:rounded-2xl md:rounded-none sm:shadow md:shadow-none sm:bg-card">
           <div className="w-full max-w-80 sm:w-80 mx-auto sm:mx-0">
             <div className="mt-8 text-4xl font-extrabold tracking-tight leading-tight text-[white]">
-              Xperience CRM.
+              <Image
+                src="/images/fullXLogoGoldG.png"
+                alt="XperienceVIP"
+                // width={"70%"}
+                // height={"100%"}
+                className=" bg-transparent"
+                preview={false}
+              />
+              <br />
+              CRM.
               <br />
               Sign in
             </div>

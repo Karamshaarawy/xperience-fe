@@ -246,12 +246,13 @@ export default function DashboardLayout({
             backgroundColor: "#292D4A",
           }}
         >
-          <div className="flex justify-center  py-6 w-fit m-auto">
+          <div className="flex justify-center  py-3 w-fit m-auto">
             <Image
-              src="/images/Untitled1111111.png"
+              src="/images/XLogoGoldG.png"
               alt="XperienceVIP"
               width={90}
               height={60}
+              style={{ maxWidth: "50%" }}
               className=" bg-transparent"
             />
           </div>
