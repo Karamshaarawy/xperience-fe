@@ -370,10 +370,14 @@ function SubscriptionOptionsPage() {
                 rules={[{ required: true }]}
                 className="w-full"
               >
-                <InputNumber min={1} className="w-full" placeholder="Price" />
+                <InputNumber
+                  min={1}
+                  className="w-full"
+                  placeholder="Duration"
+                />
               </Form.Item>
               <Form.Item
-                label="Price"
+                label="Price EGP"
                 name="price"
                 rules={[{ required: true }]}
                 className="w-full"

@@ -378,10 +378,6 @@ function HotelServicesPage() {
     record.id ? setIsEdit(true) : setIsEdit(false);
     setRecordId(record?.id);
     if (record.id) {
-      let features = record?.features?.map((feat: any) => {
-        return feat.id;
-      });
-      console.log(features);
       AddEditHotelServiceForm.setFieldsValue(record);
     }
   }
