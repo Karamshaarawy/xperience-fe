@@ -2,6 +2,7 @@
 import { GetReq } from "@/app/api/api";
 import { StatusSuccessCodes } from "@/app/api/successStatus";
 import { message, Spin } from "antd";
+import axios from "axios";
 import { Fragment, useEffect, useState } from "react";
 import { VscLoading } from "react-icons/vsc";
 
@@ -17,18 +18,33 @@ function PolicyPageEn() {
   function getPolicy() {
     let url = `policy`;
     setLoadPolicy(true);
-    GetReq(url).then((res) => {
-      setLoadPolicy(false);
-      if (StatusSuccessCodes.includes(res.status)) {
-        setPolicy(res.data.results);
-      } else {
-        res?.errors.forEach((err: any) => {
+    axios
+      .get(`https://api.xperiences.vip/api/policy/`)
+      .then(async function (response) {
+        setLoadPolicy(false);
+        setPolicy(response?.data?.results);
+      })
+      .catch(function (error: any) {
+        setLoadPolicy(false);
+
+        error?.errors?.forEach((err: any) => {
           messageApi.error(
             `${err.attr ? err.attr + ":" + err.detail : err.detail} `
           );
         });
-      }
-    });
+      });
+    // GetReq(url).then((res) => {
+    //   setLoadPolicy(false);
+    //   if (StatusSuccessCodes.includes(res.status)) {
+    //     setPolicy(res.data.results);
+    //   } else {
+    //     res?.errors.forEach((err: any) => {
+    //       messageApi.error(
+    //         `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+    //       );
+    //     });
+    //   }
+    // });
   }
 
   return (
