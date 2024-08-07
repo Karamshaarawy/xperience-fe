@@ -17,6 +17,7 @@ import {
   UploadFile,
   message,
   Tooltip,
+  Checkbox,
 } from "antd";
 import { isMobile } from "react-device-detect";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -213,6 +214,18 @@ function HotelServicesPage() {
       ),
     },
     {
+      title: "Hotel Image",
+      key: "hotel image",
+      render: (record: any) => (
+        <Checkbox
+          defaultChecked={record.belong_to_parent}
+          onChange={(checkedValues: any) => {
+            changeBelongToParent(checkedValues, record.id);
+          }}
+        />
+      ),
+    },
+    {
       title: "Edit",
       key: "edit",
       render: (record: any) => (
@@ -303,6 +316,22 @@ function HotelServicesPage() {
       }
     });
   };
+
+  function changeBelongToParent(checkedValues: any, imageId: any) {
+    PatchReq(`hotel-images/${imageId}/`, checkedValues).then((res) => {
+      setUploadingImage(false);
+      if (StatusSuccessCodes.includes(res.status)) {
+        messageApi.success("Image Changed Successfully");
+        getHotelImages(recordId ? recordId : 0);
+      } else {
+        res?.errors.forEach((err: any) => {
+          messageApi.error(
+            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+          );
+        });
+      }
+    });
+  }
 
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
