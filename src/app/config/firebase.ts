@@ -11,13 +11,13 @@ const firebaseCloudMessaging = {
   init: async function () {
     if (!firebase.getApps().length) {
       firebase.initializeApp({
-        apiKey: "AIzaSyAnj8clJ6oJfReQLYU7LlK7ZF4fxiubvhc",
-        authDomain: "experience-9062b.firebaseapp.com",
-        projectId: "experience-9062b",
-        storageBucket: "experience-9062b.appspot.com",
-        messagingSenderId: "514143788543",
-        appId: "1:514143788543:web:bfcba670f8ec1b19025bca",
-        measurementId: "G-TXY42BLJYY",
+        apiKey: process.env.apiKey,
+        authDomain: process.env.authDomain,
+        projectId: process.env.projectId,
+        storageBucket: process.env.storageBucket,
+        messagingSenderId: process.env.messagingSenderId,
+        appId: process.env.appId,
+        measurementId: process.env.measurementId,
       });
 
       try {
@@ -28,8 +28,7 @@ const firebaseCloudMessaging = {
         console.log(status);
         if (status && status === "granted") {
           const fcm_token = await getToken(messaging, {
-            vapidKey:
-              "BEH0OMvStZlMB91AoHer9AGH02amwbydsDMh-Dvs98_bGTu5_Dh8AjwyQR5fUboWdWe7nAAQHaMmXLr4DivpK4c",
+            vapidKey: process.env.vapidKey,
           });
           if (fcm_token) {
             PostReq("devices", {
@@ -67,8 +66,7 @@ const firebaseCloudMessaging = {
 
         if (status && status === "granted") {
           const fcm_token = await getToken(messaging, {
-            vapidKey:
-              "BEH0OMvStZlMB91AoHer9AGH02amwbydsDMh-Dvs98_bGTu5_Dh8AjwyQR5fUboWdWe7nAAQHaMmXLr4DivpK4c",
+            vapidKey: process.env.vapidKey,
           });
           if (fcm_token) {
             PostReq("devices", {
