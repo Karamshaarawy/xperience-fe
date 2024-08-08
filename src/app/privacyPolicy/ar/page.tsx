@@ -54,7 +54,10 @@ function PolicyPageEn() {
   return (
     <Fragment>
       {contextHolder}
-      <div className=" flex w-full justify-center bg-white" dir="rtl">
+      <div
+        className=" flex w-full justify-center bg-white px-10 py-5"
+        dir="rtl"
+      >
         {loadPolicy ? (
           <Spin size="large" className="w-full h-full content-center " />
         ) : (
