@@ -61,7 +61,7 @@ function PolicyPageEn() {
         ) : (
           <>
             <div
-              className="h-[100vh]"
+              className="min-h-[100vh] h-fit text-black"
               dangerouslySetInnerHTML={{
                 __html: policy,
               }}
