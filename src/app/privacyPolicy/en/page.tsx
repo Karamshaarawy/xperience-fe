@@ -10,23 +10,7 @@ function PolicyPageEn() {
   const [policy, setPolicy] = useState<any>([]);
   const [loadPolicy, setLoadPolicy] = useState<boolean>(false);
   const [messageApi, contextHolder] = message.useMessage();
-
-  useEffect(() => {
-    getPolicy();
-  }, []);
-
-  function getPolicy() {
-    let url = `policy`;
-    setLoadPolicy(true);
-    axios
-      .get(`https://api.xperiences.vip/api/policy/`, {
-        headers: {
-          "Accept-Language": "en-US,en;q=0.9", // Set your desired language(s)
-        },
-      })
-      .then(async function (response) {
-        setLoadPolicy(false);
-        setPolicy(`<p class="demoTitle">Terms and Conditions</p>
+  let alternativePolicy = `<p class="demoTitle">Terms and Conditions</p>
 <p class="demoTitle">Welcome to Xperience, the premier provider of luxury travel experiences in Egypt. By booking or using any of our services, you agree to be bound by the following terms and conditions:</p>
 <p class="demoTitle">Bookings and Payments:</p>
 <ul>
@@ -59,7 +43,23 @@ function PolicyPageEn() {
 </ul>
 <p class="demoTitle">By proceeding with your booking, you acknowledge that you have read, understand, and agree to abide by these terms and conditions.</p>
 <p class="demoTitle">Please don't hesitate to contact us if you have any further questions."</p>
-<!-- Comments are visible in the HTML source only -->`);
+<!-- Comments are visible in the HTML source only -->`;
+  useEffect(() => {
+    getPolicy();
+  }, []);
+
+  function getPolicy() {
+    let url = `policy`;
+    setLoadPolicy(true);
+    axios
+      .get(`https://api.xperiences.vip/api/policy/`, {
+        headers: {
+          "Accept-Language": "en-US,en;q=0.9", // Set your desired language(s)
+        },
+      })
+      .then(async function (response) {
+        setLoadPolicy(false);
+        setPolicy(response?.data[0]?.content);
       })
       .catch(function (error: any) {
         setLoadPolicy(false);
@@ -91,12 +91,16 @@ function PolicyPageEn() {
           <Spin size="large" className="w-full h-full content-center " />
         ) : (
           <>
-            <div
-              className="min-h-[100vh] h-fit text-black"
-              dangerouslySetInnerHTML={{
-                __html: policy,
-              }}
-            ></div>
+            {policy ? (
+              <div className="min-h-[100vh] h-fit text-black">{policy}</div>
+            ) : (
+              <div
+                className="min-h-[100vh] h-fit text-black"
+                dangerouslySetInnerHTML={{
+                  __html: alternativePolicy,
+                }}
+              ></div>
+            )}
           </>
         )}
       </div>
