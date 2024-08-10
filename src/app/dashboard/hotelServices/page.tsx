@@ -1,31 +1,32 @@
 "use client";
-import { Fragment, useEffect, useRef, useState } from "react";
-import isAuth from "../../../../components/isAuth";
+import { DeleteReq, GetReq, PatchReq, PostReq } from "@/app/api/api";
+import { StatusSuccessCodes } from "@/app/api/successStatus";
 import {
   Button,
   Form,
   FormInstance,
+  GetProp,
+  Image,
   Input,
   InputNumber,
+  message,
   Modal,
   Popconfirm,
-  Image,
   Select,
   Table,
   TableColumnsType,
   Upload,
   UploadFile,
-  message,
-  Tooltip,
-  Checkbox,
+  UploadProps,
 } from "antd";
-import { isMobile } from "react-device-detect";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { DeleteReq, GetReq, PatchReq, PostReq } from "@/app/api/api";
-import { StatusSuccessCodes } from "@/app/api/successStatus";
 import TextArea from "antd/es/input/TextArea";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Fragment, useEffect, useRef, useState } from "react";
+import { isMobile } from "react-device-detect";
+import { BiPlus } from "react-icons/bi";
 import { MdDeleteForever } from "react-icons/md";
-import { BiUpload } from "react-icons/bi";
+
+import isAuth from "../../../../components/isAuth";
 
 function HotelServicesPage() {
   const columns: TableColumnsType<any> = [
@@ -48,13 +49,6 @@ function HotelServicesPage() {
       title: "Description",
       dataIndex: "description",
       key: "description",
-      // ellipsis: true,
-      // width: "120px",
-      // render: (description: any) => (
-      //   <Tooltip placement="topLeft" title={description}>
-      //     {description}
-      //   </Tooltip>
-      // ),
     },
     {
       title: "View",
@@ -73,7 +67,6 @@ function HotelServicesPage() {
     },
     {
       title: "Day Price",
-      // dataIndex: "day_price",
       key: "day_price",
       render: (record: any) => (
         <div>
@@ -214,41 +207,33 @@ function HotelServicesPage() {
       ),
     },
     {
-      title: "Hotel Image",
-      key: "hotel image",
-      render: (record: any) => (
-        <Checkbox
-          defaultChecked={record.belong_to_parent}
-          onChange={(checkedValues: any) => {
-            changeBelongToParent(checkedValues, record.id);
-          }}
-        />
-      ),
+      title: "Is 3D?",
+      key: "is3D",
+      render: (record: any) => (record.is_3d ? "Yes" : "No"),
+    },
+    {
+      title: "Level",
+      key: "level",
+      dataIndex: "level",
     },
     {
       title: "Edit",
       key: "edit",
       render: (record: any) => (
-        <Upload
-          maxCount={1}
-          accept=".png, .jpeg"
-          style={{ width: "100%" }}
-          className="flex flex-col cursor-pointer avatar-uploader"
-          fileList={hotelFileList}
-          onChange={(e: any) => handleImagesChange(e, record)}
+        <Button
+          style={{
+            backgroundColor: "#363B5E",
+            borderColor: "#F1DF78",
+          }}
+          className=" text-white"
+          id={record.id}
+          onClick={() => {
+            openEditImageModel(record);
+          }}
+          loading={uploadingImage}
         >
-          <Button
-            style={{
-              backgroundColor: "#363B5E",
-              borderColor: "#F1DF78",
-            }}
-            className=" text-white"
-            id={record.id}
-            loading={uploadingImage}
-          >
-            Change
-          </Button>
-        </Upload>
+          Edit
+        </Button>
       ),
     },
     {
@@ -297,42 +282,6 @@ function HotelServicesPage() {
     });
   }
 
-  const handleImagesChange = (e: any, record: any) => {
-    let imageData = new FormData();
-    imageData.append("image", e?.file?.originFileObj);
-    imageData.append("hotel_service", JSON.stringify(recordId));
-    setUploadingImage(true);
-    PatchReq(`hotel-images/${record.id}/`, imageData).then((res) => {
-      setUploadingImage(false);
-      if (StatusSuccessCodes.includes(res.status)) {
-        messageApi.success("Image Changed Successfully");
-        getHotelImages(recordId ? recordId : 0);
-      } else {
-        res?.errors.forEach((err: any) => {
-          messageApi.error(
-            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
-          );
-        });
-      }
-    });
-  };
-
-  function changeBelongToParent(checkedValues: any, imageId: any) {
-    PatchReq(`hotel-images/${imageId}/`, checkedValues).then((res) => {
-      setUploadingImage(false);
-      if (StatusSuccessCodes.includes(res.status)) {
-        messageApi.success("Image Changed Successfully");
-        getHotelImages(recordId ? recordId : 0);
-      } else {
-        res?.errors.forEach((err: any) => {
-          messageApi.error(
-            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
-          );
-        });
-      }
-    });
-  }
-
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
   const { replace } = useRouter();
@@ -341,6 +290,10 @@ function HotelServicesPage() {
   const [messageApi, contextHolder] = message.useMessage();
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [hotelFeaturesDropDown, setHotelFeaturesDropDown] = useState<any>([]);
+  const [AddEditHotelServiceImagesForm] = Form.useForm();
+  const [hotelServiceImagesFileList, setHotelServiceImagesFileList] = useState<
+    UploadFile[]
+  >([]);
 
   const [hotelServicesList, setHotelServicesList] = useState<any[]>([]);
   const [hotelServicesCount, setHotelServicesCount] = useState<number>(0);
@@ -351,9 +304,19 @@ function HotelServicesPage() {
   const [postEditRequestLoading, setPostEditRequestLoading] =
     useState<any>(false);
   const [addEditModalOpen, setAddEditModalOpen] = useState<any>(false);
+  const [
+    addEditHotelServiceImagesModalOpen,
+    setAddEditHotelServiceImagesModalOpen,
+  ] = useState<any>(false);
   const [isEdit, setIsEdit] = useState<any>(false);
+  const [isImageEdit, setIsImageEdit] = useState<any>(false);
   const [recordId, setRecordId] = useState<number | undefined>(undefined);
-  const [hotelFileList, setHotelFileList] = useState<UploadFile[]>([]);
+  const [imageRecordId, setImageRecordId] = useState<number | undefined>(
+    undefined
+  );
+  const [previewImage, setPreviewImage] = useState("");
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState<any>();
 
   useEffect(() => {
     getHotelServicesList();
@@ -411,6 +374,15 @@ function HotelServicesPage() {
     }
   }
 
+  function handleImagesCancel() {
+    setAddEditHotelServiceImagesModalOpen(false);
+    AddEditHotelServiceImagesForm.resetFields();
+    setImageRecordId(undefined);
+    setImageUrl(undefined);
+    setIsImageEdit(false);
+    setHotelServiceImagesFileList([]);
+  }
+
   function handleCancel() {
     setAddEditModalOpen(false);
     AddEditHotelServiceForm.resetFields();
@@ -418,7 +390,6 @@ function HotelServicesPage() {
   }
 
   function addEditHotelService(values: any) {
-    // values.features = [values.features];
     const data = new FormData();
     for (const key in values) {
       if (key === "image" && typeof values[key] === "string") {
@@ -459,26 +430,6 @@ function HotelServicesPage() {
         });
   }
 
-  const handleImagesUpload = (e: any) => {
-    let imageData = new FormData();
-    imageData.append("image", e?.file?.originFileObj);
-    imageData.append("hotel_service", JSON.stringify(recordId));
-    setUploadingImage(true);
-    PostReq(`hotel-images/`, imageData).then((res) => {
-      setUploadingImage(false);
-      if (StatusSuccessCodes.includes(res.status)) {
-        messageApi.success("Image Added Successfully");
-        getHotelImages(recordId ? recordId : 0);
-      } else {
-        res?.errors.forEach((err: any) => {
-          messageApi.error(
-            `${err.attr ? err.attr + ":" + err.detail : err.detail} `
-          );
-        });
-      }
-    });
-  };
-
   function getHotelFeatures() {
     let url = `hotel-service-features/?limit=99999`;
     GetReq(url).then((res: any) => {
@@ -501,11 +452,87 @@ function HotelServicesPage() {
       }
     });
   }
-  // const OPTIONS = ["Apples", "Nails", "Bananas", "Helicopters"];
 
   const filteredOptions = hotelFeaturesDropDown.filter(
     (o: any) => !selectedItems.includes(o)
   );
+
+  const HotelServiceImagesFile = (e: any) => {
+    setHotelServiceImagesFileList(e.fileList);
+    return e?.file?.originFileObj;
+  };
+
+  type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
+
+  const getBase64 = (file: FileType): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+
+  const handlePreview = async (file: UploadFile) => {
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj as FileType);
+    }
+
+    setPreviewImage(file.url || (file.preview as string));
+    setPreviewOpen(true);
+  };
+
+  const handleChange: UploadProps["onChange"] = ({ fileList: newFileList }) =>
+    setHotelServiceImagesFileList(newFileList);
+
+  function addEditHotelServiceImages(values: any) {
+    const data = new FormData();
+    for (const key in values) {
+      if (key === "image" && typeof values[key] === "string") {
+        continue;
+      } else {
+        data.append(`${key}`, values[key]);
+      }
+    }
+    data.append("hotel_service", JSON.stringify(recordId));
+    setLoadHotelServicesImages(true);
+    isImageEdit
+      ? PatchReq(`hotel-images/${imageRecordId}/`, data).then((res) => {
+          setUploadingImage(false);
+          if (StatusSuccessCodes.includes(res.status)) {
+            messageApi.success("Image Changed Successfully");
+            getHotelImages(recordId ? recordId : 0);
+            handleImagesCancel();
+          } else {
+            res?.errors.forEach((err: any) => {
+              messageApi.error(
+                `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+              );
+            });
+          }
+        })
+      : PostReq(`hotel-images/`, data).then((res) => {
+          setUploadingImage(false);
+          if (StatusSuccessCodes.includes(res.status)) {
+            messageApi.success("Image Added Successfully");
+            getHotelImages(recordId ? recordId : 0);
+            handleImagesCancel();
+          } else {
+            res?.errors.forEach((err: any) => {
+              messageApi.error(
+                `${err.attr ? err.attr + ":" + err.detail : err.detail} `
+              );
+            });
+          }
+        });
+  }
+
+  function openEditImageModel(record?: any) {
+    setAddEditHotelServiceImagesModalOpen(true);
+    record.id ? setIsImageEdit(true) : setIsImageEdit(false);
+    setImageRecordId(record?.id);
+    record ? AddEditHotelServiceImagesForm.setFieldsValue(record) : null;
+    setImageUrl(record.image);
+  }
 
   return (
     <Fragment>
@@ -534,28 +561,117 @@ function HotelServicesPage() {
           cancelButtonProps={{ style: { display: "none" } }}
         >
           <div className="m-5 flex flex-auto items-center w-full">
-            {hotelImagesList.length >= 10 ? null : (
-              <Upload
-                maxCount={1}
-                accept=".png, .jpeg"
-                style={{ width: "100%" }}
-                className="flex flex-col cursor-pointer avatar-uploader"
-                fileList={hotelFileList}
-                onChange={handleImagesUpload}
+            <Modal
+              open={addEditHotelServiceImagesModalOpen}
+              title={
+                isImageEdit
+                  ? "Edit Hotel Service Image"
+                  : "Add New Hotel Service Image"
+              }
+              onCancel={handleImagesCancel}
+              width={700}
+              maskClosable={false}
+              okButtonProps={{ style: { display: "none" } }}
+              cancelButtonProps={{ style: { display: "none" } }}
+            >
+              <Form
+                form={AddEditHotelServiceImagesForm}
+                layout="vertical"
+                onFinish={addEditHotelServiceImages}
               >
-                <Button
-                  className=" flex items-center justify-center text-white"
-                  style={{
-                    backgroundColor: "#363B5E",
-                    borderColor: "#F1DF78",
-                  }}
-                  icon={<BiUpload size={20} />}
-                  loading={uploadingImage}
+                <div className="flex flex-col items-center sm:flex-col md:flex-row lg:flex-row xl:flex-row xxl:flex-row gap-2 justify-center">
+                  <Form.Item
+                    label="Image"
+                    name="image"
+                    getValueFromEvent={HotelServiceImagesFile}
+                    rules={[{ required: true }]}
+                  >
+                    <Upload
+                      maxCount={1}
+                      accept=".png, .jpeg"
+                      listType="picture-card"
+                      style={{ width: "100%" }}
+                      className="flex flex-col cursor-pointer avatar-uploader"
+                      fileList={hotelServiceImagesFileList}
+                      onPreview={handlePreview}
+                      onChange={handleChange}
+                    >
+                      {hotelServiceImagesFileList.length >=
+                      1 ? null : hotelServiceImagesFileList.length === 0 &&
+                        imageUrl === undefined ? (
+                        <div>
+                          <BiPlus
+                            size={20}
+                            color="rgba(218, 222, 227, 1)"
+                            className="mx-[250px]"
+                          />
+                          <div>Upload</div>
+                        </div>
+                      ) : (
+                        <Image
+                          src={imageUrl}
+                          alt="Car Image"
+                          preview={false}
+                          fallback="/images/noPreview.jpeg"
+                        />
+                      )}
+                    </Upload>
+                  </Form.Item>
+                  {previewImage && (
+                    <Image
+                      preview={{
+                        visible: previewOpen,
+                        onVisibleChange: (visible) => setPreviewOpen(visible),
+                        afterOpenChange: (visible) =>
+                          !visible && setPreviewImage(""),
+                      }}
+                      src={previewImage}
+                      alt="Preview Image"
+                    />
+                  )}
+                </div>
+
+                <Form.Item
+                  label="Level"
+                  name="level"
+                  rules={[{ required: true }]}
+                  className="w-full"
                 >
-                  Click to Upload
-                </Button>
-              </Upload>
-            )}
+                  <InputNumber min={1} className="w-full" placeholder="Level" />
+                </Form.Item>
+
+                <Form.Item
+                  label="Is 3D"
+                  name="is_3d"
+                  rules={[{ required: true }]}
+                  className="w-full"
+                >
+                  <Select placeholder="3D ?">
+                    <Select.Option key="yes" value={true}>
+                      Yes
+                    </Select.Option>
+                    <Select.Option key="no" value={false}>
+                      No
+                    </Select.Option>
+                  </Select>
+                </Form.Item>
+                <SubmitButton
+                  form={AddEditHotelServiceImagesForm}
+                  loading={postEditRequestLoading}
+                />
+              </Form>
+            </Modal>
+
+            <Button
+              className=" flex items-center justify-center text-white"
+              style={{
+                backgroundColor: "#363B5E",
+                borderColor: "#F1DF78",
+              }}
+              onClick={() => setAddEditHotelServiceImagesModalOpen(true)}
+            >
+              Add New Image
+            </Button>
           </div>
           <Table
             dataSource={hotelImagesList}
@@ -564,17 +680,6 @@ function HotelServicesPage() {
             rowKey={"id"}
             scroll={{ x: 0 }}
             pagination={false}
-            //   {
-            //   current: currentPage,
-            //   total: carServicesCount,
-            //   pageSize: 10,
-            //   showTotal(total, range) {
-            //     return `${range[0]}-${range[1]} of ${total} items`;
-            //   },
-            //   onChange: (page, pageSize) => {
-            //     getCarServicesList(page, pageSize);
-            //   },
-            // }}
           />
         </Modal>
         <Modal
