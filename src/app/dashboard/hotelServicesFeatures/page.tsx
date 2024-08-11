@@ -357,7 +357,7 @@ function HotelServiceFeaturesPage() {
             >
               <Upload
                 maxCount={1}
-                accept=".png, .jpeg"
+                accept=".png, .jpg, .jpeg, .webp"
                 listType="picture-card"
                 style={{ width: "100%" }}
                 className="flex flex-col cursor-pointer avatar-uploader"

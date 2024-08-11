@@ -183,7 +183,7 @@ function CarServicesPage() {
       render: (record: any) => (
         <Upload
           maxCount={1}
-          accept=".png, .jpeg"
+          accept=".png, .jpg, .jpeg, .webp"
           style={{ width: "100%" }}
           className="flex flex-col cursor-pointer avatar-uploader"
           fileList={carsFileList}
@@ -585,7 +585,7 @@ function CarServicesPage() {
             {carImagesList.length >= 10 ? null : (
               <Upload
                 maxCount={1}
-                accept=".png, .jpeg"
+                accept=".png, .jpg, .jpeg, .webp"
                 style={{ width: "100%" }}
                 className="flex flex-col cursor-pointer avatar-uploader"
                 fileList={carsFileList}
@@ -749,7 +749,7 @@ function CarServicesPage() {
             >
               <Upload
                 maxCount={1}
-                accept=".png, .jpeg"
+                accept=".png, .jpg, .jpeg, .webp"
                 listType="picture-card"
                 style={{ width: "100%" }}
                 className="flex flex-col cursor-pointer avatar-uploader"
