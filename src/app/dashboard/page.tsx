@@ -8,7 +8,9 @@ import {
   message,
   Row,
   Select,
+  Spin,
   Statistic,
+  Tooltip,
 } from "antd";
 import {
   ArcElement,
@@ -18,7 +20,7 @@ import {
   Legend,
   LinearScale,
   Title,
-  Tooltip,
+  // Tooltip,
 } from "chart.js";
 import { isMobile } from "react-device-detect";
 
@@ -26,9 +28,12 @@ import { useEffect, useRef, useState } from "react";
 import { Bar, Doughnut } from "react-chartjs-2";
 
 import isAuth from "../../../components/isAuth";
-import { GetReq } from "../api/api";
+import { GetByResType, GetReq } from "../api/api";
 import { StatusSuccessCodes } from "../api/successStatus";
 import { GoDotFill } from "react-icons/go";
+import { SiMicrosoftexcel } from "react-icons/si";
+import { IoDocumentTextOutline } from "react-icons/io5";
+import ExportExcel from "../../../components/exportExcel";
 
 ChartJS.register(
   ArcElement,
@@ -36,7 +41,7 @@ ChartJS.register(
   LinearScale,
   BarElement,
   Title,
-  Tooltip,
+  // Tooltip,
   Legend
 );
 
@@ -49,7 +54,13 @@ interface Parameters {
 const { RangePicker } = DatePicker;
 function Dashboard() {
   const [loadStatistics, setLoadStatistics] = useState<boolean>(false);
-  const [statisticsData, setStatisticsData] = useState<any>();
+
+  const [statisticsData, setStatisticsData] = useState<any>({
+    total_hotel_reservations: 0,
+    total_car_reservations: 0,
+    total_final_price_car: 0,
+    total_final_price_hotel: 0,
+  });
   const [statisticsPendingData, setStatisticsPendingData] = useState<any>();
   const [statisticsConfirmedData, setStatisticsConfirmedData] = useState<any>();
   const [statisticsCompletedData, setStatisticsCompletedData] = useState<any>();
@@ -286,14 +297,16 @@ function Dashboard() {
         <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row  justify-center items-center content-center pb-5">
           <Statistic
             title="No of Users"
-            value={usersCount}
+            value={loadStatistics ? "Loading..." : usersCount}
             className="shadow-md bg-white border rounded-lg flex flex-col items-center align-middle justify-center w-fit p-2  mx-5"
           />
           <Statistic
             title="Total Reservations Count"
             value={
-              statisticsData?.total_hotel_reservations +
-              statisticsData?.total_car_reservations
+              loadStatistics
+                ? "Loading..."
+                : statisticsData?.total_hotel_reservations +
+                  statisticsData?.total_car_reservations
             }
             className="shadow-md  bg-white border rounded-lg flex flex-col items-center align-middle justify-center w-fit p-2 m-2 mx-5"
           />
@@ -336,49 +349,52 @@ function Dashboard() {
       <Card className="p-5 border rounded-lg overflow-auto">
         <div>
           <div>
-            <Form
-              form={searchForm}
-              onFinish={applySearch}
-              layout="inline"
-              className={
-                "gap-3 mb-5 items-baseline flex " +
-                (isMobile ? " flex-col" : "flex-row")
-              }
-            >
-              <Form.Item name="status">
-                <Select placeholder="Select Status" className="w-fit">
-                  <Select.Option
-                    key="WAITING_FOR_PAYMENT"
-                    value={"WAITING_FOR_PAYMENT"}
-                  >
-                    Waiting For Payment
-                  </Select.Option>
-                  <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
-                    Confirmed
-                  </Select.Option>
-                  <Select.Option key="COMPLETED" value={"COMPLETED"}>
-                    Completed
-                  </Select.Option>
-                  <Select.Option key="CANCELLED" value={"CANCELLED"}>
-                    Cancelled
-                  </Select.Option>
-                </Select>
-              </Form.Item>
-              <Form.Item name="date">
-                <RangePicker />
-              </Form.Item>
-              <Button
-                htmlType="submit"
-                style={{
-                  backgroundColor: "#363B5E",
-                  borderColor: "#F1DF78",
-                }}
-                className=" text-white mx-2"
+            <div className="flex flex-row justify-between">
+              <Form
+                form={searchForm}
+                onFinish={applySearch}
+                layout="inline"
+                className={
+                  "gap-3 mb-5 items-baseline flex " +
+                  (isMobile ? " flex-col" : "flex-row")
+                }
               >
-                Apply
-              </Button>
-              <Button onClick={onSearchReset}>Reset</Button>
-            </Form>
+                <Form.Item name="status">
+                  <Select placeholder="Select Status" className="w-fit">
+                    <Select.Option
+                      key="WAITING_FOR_PAYMENT"
+                      value={"WAITING_FOR_PAYMENT"}
+                    >
+                      Waiting For Payment
+                    </Select.Option>
+                    <Select.Option key="CONFIRMED" value={"CONFIRMED"}>
+                      Confirmed
+                    </Select.Option>
+                    <Select.Option key="COMPLETED" value={"COMPLETED"}>
+                      Completed
+                    </Select.Option>
+                    <Select.Option key="CANCELLED" value={"CANCELLED"}>
+                      Cancelled
+                    </Select.Option>
+                  </Select>
+                </Form.Item>
+                <Form.Item name="date">
+                  <RangePicker />
+                </Form.Item>
+                <Button
+                  htmlType="submit"
+                  style={{
+                    backgroundColor: "#363B5E",
+                    borderColor: "#F1DF78",
+                  }}
+                  className=" text-white mx-2"
+                >
+                  Apply
+                </Button>
+                <Button onClick={onSearchReset}>Reset</Button>
+              </Form>
+              <ExportExcel />
+            </div>
           </div>
           <div className="flex flex-col sm:flex-row md:flex-row lg:flex-row xl:flex-row  ">
             <div className="w-full h-[350px] ">
@@ -396,7 +412,7 @@ function Dashboard() {
               </h4>
               <h4 className="flex flex-row gap-2">
                 <GoDotFill size={30} color={"#1BD7B7"} />
-                {statisticsData?.total_final_price_car}{" "}
+                {statisticsData?.total_final_price_car}
                 {"Car Reservations Revenue"}
               </h4>
               <h4 className="flex flex-row gap-2">
